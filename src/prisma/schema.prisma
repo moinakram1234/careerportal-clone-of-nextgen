@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("NEXT_PUBLIC_DATABASE_URL")
+ }
+
+model JobPost {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  jobtitle String
+  jobtype String
+  joblocation String
+  description String
+  createAt DateTime @default(now())
+}
+model JobApplication {
+  id String    @id @default(auto()) @map("_id") @db.ObjectId
+  fullName String?
+  phone String? 
+  email String?
+  qualification String?
+  selectedDepartment String?
+  cv String? // Assuming the CV is stored as a string? path or content
+  address String?
+  createdAt DateTime @default(now())
+}

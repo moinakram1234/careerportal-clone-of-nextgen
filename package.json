@@ -1,0 +1,38 @@
+{
+  "dependencies": {
+    "@next/font": "13.1.4",
+    "@prisma/client": "^5.7.0",
+    "eslint": "8.32.0",
+    "eslint-config-next": "13.1.4",
+    "mongodb": "^6.3.0",
+    "next": "13.1.4",
+    "react": "18.2.0",
+    "react-datepicker": "^4.24.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.49.0",
+    "react-icons": "^4.7.1",
+    "react-no-ssr": "^1.1.0",
+    "react-quill": "^2.0.0",
+    "react-toastify": "^9.1.3",
+    "typewriter-effect": "^2.21.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "prisma": "^5.7.0",
+    "tailwindcss": "^3.3.6"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "prisma generate"
+  },
+  "name": "pepsico-career-portal",
+  "description": "Build collapsible-sidebar-in-nextjs",
+  "version": "1.0.0",
+  "main": "next.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
