@@ -5,7 +5,7 @@ import {
   deleteApplication,
   deleteFile,
   getJobApplication,
-} from "@/prisma/jobapplication";
+} from "prisma/jobapplication";
 
 const uploadFolder = path.join(process.cwd(), "uploads"); // Define your upload folder
 

@@ -50,11 +50,12 @@ const Career = () => {
     <div>
       <BaseLayout>
         <div className="relative  h-72 w-full">
-          <img
-            className="block mx-auto h-full w-4/5  bg-no-repeat bg-center rounded"
-            src="cover.jpg"
-            alt="cover image"
-          />
+        <img
+  className="block mx-auto h-full w-full md:w-3/4 bg-no-repeat bg-center rounded"
+  src="cover.jpg"
+  alt="cover image"
+/>
+
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {/* Typewriter effect */}
             <NoSSR>

@@ -1,9 +1,5 @@
-import {
-  createJobPost,
-  getAllPosts,
-  deletePost,
-  updatePost,
-} from "@/prisma/jobpost";
+import { createJobPost, deletePost, getAllPosts, updatePost } from "prisma/jobpost";
+
 export default async function handler(req, res) {
   try {
     switch (req.method.toLowerCase()) {
