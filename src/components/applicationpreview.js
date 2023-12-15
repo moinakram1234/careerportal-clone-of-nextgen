@@ -78,12 +78,13 @@ const ApplicationPreview = ({ formData, onEdit }) => {
           <strong>Address:</strong> {formData.address}
         </div>
       </div>
+      <p>{formData.Cv ? formData.Cv.name : "No file selected"}</p>
 
       <button
         className="bg-blue-500 text-white py-2 px-4 mt-6 rounded-md hover:bg-blue-600"
         onClick={handleSubmit}
       >
-        Edit Application
+        Submit Application
       </button>
       <button
         className="bg-blue-500 text-white py-2 px-4 mt-6 rounded-md hover:bg-blue-600"

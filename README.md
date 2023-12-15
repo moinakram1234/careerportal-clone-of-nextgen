@@ -1,2 +1,2 @@
-# collapsible-sidebar-in-nextjs
-Build collapsible-sidebar-in-nextjs 
+# pepsico-career-portal-in-nextjs
+Build pepsico-career-portal-in-nextjs

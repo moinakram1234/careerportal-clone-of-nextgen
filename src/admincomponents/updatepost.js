@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import { updateJobPost } from '@/server_requests/client_requests';
+import "react-quill/dist/quill.snow.css";
 const UpdatePost = ({ jobPost, onClose }) => {
   const [jobtitle, setJobtitle] = useState(jobPost.jobtitle);
   const [jobtype, setJobtype] = useState(jobPost.jobtype);
@@ -88,18 +89,17 @@ const UpdatePost = ({ jobPost, onClose }) => {
               Job Description
             </label>
             {/* Replace ReactQuill with a standard text input */}
-            <textarea
-              id="description"
-              className="w-full h-40 p-2 border rounded-md justify-items-start"
-              placeholder="Enter job description"
+            <ReactQuill
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
+              onChange={handleQuillChange}
+              theme="snow"
+              className="  h-56" // Adjust the height as needed
+              placeholder="Enter job description"
             />
           </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 px-4 mt-6 rounded-md hover:bg-blue-600"
+            className="bg-blue-500 text-white py-2 px-4 mt-8 rounded-md hover:bg-blue-600"
           >
             Update Job Post
           </button>

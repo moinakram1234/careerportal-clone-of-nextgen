@@ -8,7 +8,7 @@ const Modal = ({ children, onClose }) => {
       <div className="bg-black bg-opacity-50 absolute inset-0 "></div>
       <div  className="bg-white p-9  rounded-md z-10">
         {children}
-        <button className="mt-64 pr-20 bg-blue-500 text-white absolute   px-4 rounded-md hover:bg-blue-600" onClick={onClose}>
+        <button className="absolute bg-blue-500 text-white py-2 px-4 rounded   ml-64 mt-72  hover:bg-blue-600" onClick={onClose}>
           Close
         </button>
       </div>

@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import UpdatePost from "../../admincomponents/updatepost";
 import Modal from "@/admincomponents/modal";
 import "react-quill/dist/quill.bubble.css";
-import { fetchJobPosts } from "@/server_requests/client_requests";
+import { deleteJobPost, fetchJobPosts } from "@/server_requests/client_requests";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const PostJobs = () => {
@@ -35,24 +35,23 @@ const PostJobs = () => {
     setIsModalOpen(false);
   };
  //delete job post
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`/api/postjob?id=${id}`, {
-        method: "DELETE",
-      });
+ const handleDelete = async (id) => {
+  try {
+    const deleted = await deleteJobPost(id);
 
-      if (response.ok) {
-        setJobPosts((prevJobPosts) =>
-          prevJobPosts.filter((jobPost) => jobPost.id !== id)
-        );
-        toast("Job post deleted successfully");
-      } else {
-        console.error("Error deleting job post:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error deleting job post:", error);
+    if (deleted) {
+      setJobPosts((prevJobPosts) =>
+        prevJobPosts.filter((jobPost) => jobPost.id !== id)
+      );
+      toast("Job post deleted successfully");
     }
-  };
+    // Handle case where deletion fails (optional)
+  } catch (error) {
+    console.error("Error handling deletion:", error);
+    // Handle error appropriately
+  }
+};
+
 
   return (
     <BaseLayout>
@@ -61,12 +60,14 @@ const PostJobs = () => {
 
         {/* Display job posts */}
         {jobPosts.map((jobPost) => (
-          <div
-            key={jobPost.id}
-            className="border p-4 my-4 flex flex-col items-end md:flex-row md:justify-between"
+          
+         <div key={jobPost.id}><div style={{backgroundColor:'#005896'}}><h3 className="text-xl  text-white p-5 font-bold">{jobPost.jobtitle}</h3></div>
+           <div
+            
+            className="border    flex flex-col items-end md:flex-row md:justify-between"
           >
-            <div>
-              <h3 className="text-xl font-bold">{jobPost.jobtitle}</h3>
+            <div >
+              
               <ReactQuill
                     readOnly={true}
                     theme={"bubble"}                 
@@ -89,6 +90,7 @@ const PostJobs = () => {
                 </button>
               </div>
             </div>
+          </div>
           </div>
         ))}
 

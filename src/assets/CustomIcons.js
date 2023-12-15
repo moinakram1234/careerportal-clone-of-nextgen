@@ -10,6 +10,8 @@ import { PiCertificate } from "react-icons/pi";
 import { FaFilePdf } from "react-icons/fa6";
 import { FcDepartment } from "react-icons/fc";
 import { MdSummarize } from "react-icons/md";
+import { FaFileUpload } from "react-icons/fa";
+import { MdOutlineAlternateEmail } from "react-icons/md";
 export const HomeIcon = () => <div className='hover:text-blue-900'> <AiOutlineHome size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
 export const PostAddIcon = () => <div className='hover:text-blue-900'> <MdOutlinePostAdd size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
 export const DocumentAttachIcon = () => <div className='hover:text-blue-900'> <IoDocumentAttach size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
@@ -21,3 +23,5 @@ export const Degreeicon=()=> <div className='hover:text-blue-900'><PiCertificate
 export const Pdficon=()=> <div className='hover:text-blue-900'><FaFilePdf size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
 export const Departmenticon=()=> <div className='hover:text-blue-900'><FcDepartment size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
 export const Coverlettericon=()=> <div className='hover:text-blue-900'><MdSummarize size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
+export const Dropcv_icon=()=> <div className='hover:text-blue-900'><MdSummarize size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
+export const Emailicon=()=> <div className='hover:text-blue-900'><MdOutlineAlternateEmail size={25} style={{opacity:"0.7",color:'#005997'}} /></div>

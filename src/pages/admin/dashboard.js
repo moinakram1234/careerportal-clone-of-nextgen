@@ -1,8 +1,8 @@
 import BaseLayout from "../../admincomponents/BaseLayout";
 import { useState } from "react";
 import Statusitems from "@/Data/dummystatusdata";
-import ApplicationStatus from "../../admincomponents/ApplicationsStatus";
-import RecievedApplications from "../../admincomponents/RecievedApplications";
+import ApplicationStatus from "../../admincomponents/StatusSection";
+import RecievedApplications from "../../admincomponents/LatestApplications";
 
 
 const Dashboard = () => {

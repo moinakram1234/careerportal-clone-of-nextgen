@@ -83,14 +83,16 @@ const Career = () => {
         </h1>
 
         {/* Add the job search fields and button here */}
-        <div className="w-3/5 mx-auto">
+        <div className="w-4/5 mx-auto">
           {jobPosts && jobPosts.map((jobPost, index) => (
-            <div
-              key={index}
-              className="border pb-10 pt-5 pl-5 rounded-xl my-4 flex flex-col relative"
+           <div key={index}>
+            <div className='rounded-t-xl' style={{backgroundColor:'#005896',marginTop:'10px'}}><h3 className="text-xl  text-white p-5 font-bold">{jobPost.jobtitle}</h3></div>
+           <div
+              
+              className=" border pb-10 pt-5 pl-5 rounded-b-xl   relative"
             >
               <div>
-                <h3 className="text-xl font-bold">{jobPost.jobtitle}</h3>
+                
                 <ReactQuill
                   readOnly={true}
                   theme={"bubble"}
@@ -125,6 +127,7 @@ const Career = () => {
                 Apply Now
               </button>
           
+            </div>
             </div>
           ))}
           {isModalOpen && (

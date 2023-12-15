@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-
 import {
-  Emailicon,
+  HomeIcon,
+  PostAddIcon,
+  DocumentAttachIcon,
   PersonNaneicon,
   ViewApp,
   Contacticon,
@@ -9,26 +10,37 @@ import {
   Degreeicon,
   Pdficon,
   Departmenticon,
+  Coverlettericon,
 } from "@/assets/CustomIcons";
-import BaseLayout from "@/admincomponents/BaseLayout";
-import { fetchData_application } from "@/server_requests/client_requests";
-
-const ViewallApplications = () => {
+import { FaTrash } from "react-icons/fa";
+import { deleteData_application } from "@/server_requests/client_requests";
+const RecievedApplications = () => {
   const [applications, setApplications] = useState([]);
+
+  const filterDataByDate = (data, targetDate) => {
+    return data.filter(item => {
+      const createdAt = new Date(item.createdAt).toDateString(); // Use the correct property name 'createAt'
+      return createdAt === targetDate;
+    });
+  };
+
   useEffect(() => {
-    const loadData = async () => {
+    const fetchData = async () => {
       try {
-        const data = await fetchData_application();
-        setApplications(data);
+        const response = await fetch(process.env.NEXT_PUBLIC_APP_URL); // Replace with your actual API endpoint
+        const data = await response.json();
+        const today = new Date().toDateString();
+        const today_Application_Data = filterDataByDate(data, today);
+        setApplications(today_Application_Data);
       } catch (error) {
-        // Handle the error appropriately
-        console.error("Error loading data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    loadData();
-  }, []);
-  
+    fetchData();
+  }, []); 
+  // The empty dependency array ensures the effect runs once when the component mounts
+
   const downloadPdf = async (pdfPath, filename) => {
     try {
       // Fetch the PDF file from the server using the provided path.
@@ -62,19 +74,31 @@ const ViewallApplications = () => {
       console.error('Error downloading PDF:', error);
     }
   };
+  //delete application
+  const deleteApplication = async (applicationId) => {
+    await deleteData_application(applicationId);
+    // After deletion, refresh the list of applications
+    const updatedApplications = applications.filter((app) => app.id !== applicationId);
+    setApplications(updatedApplications);
+  };
+
+  
   return (
-    <BaseLayout>
-       <div
+    <div
         className="flex flex-wrap ml-5 overflow-y-auto "
         style={{ maxHeight: "90vh" }}
       >
-        {applications.map((data, index) => (
+        {applications && applications.map((data, index) => (
           <div
             style={{ backgroundColor: "#f3f4f6" }}
             key={index}
-            className="m-5 h-72 w-2/5  rounded shadow-sm shadow-blue-200 overflow-hidden items-center"
+            className="ml-5 mb-4 h-72 w-2/5  rounded shadow-sm shadow-blue-200 overflow-hidden items-center"
           >
-            
+            <div className="text-right m-5"><button onClick={() => deleteApplication(data.id)} className="text-red-500  hover:text-red-700">
+                  <FaTrash/>
+                </button>
+              </div>
+         
 
             <div className="ml-5 pt-5 overflow-hidden flex hover:bg-white">
               <i>
@@ -91,13 +115,7 @@ const ViewallApplications = () => {
               </i>
               <span className="ml-3">{data.phone}</span>
             </div>
-            <div className="ml-5 pt-2 hover:bg-white flex">
-              <i>
-                {" "}
-                <Emailicon />
-              </i>
-              <span className="ml-3">{data.email}</span>
-            </div>
+
             <div className="ml-5 pt-2 hover:bg-white flex">
               <i>
                 {" "}
@@ -133,8 +151,7 @@ const ViewallApplications = () => {
           </div>
         ))}
       </div>
-    </BaseLayout>
   );
 };
 
-export default ViewallApplications;
+export default RecievedApplications;

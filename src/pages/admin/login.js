@@ -42,6 +42,7 @@ const Login = () => {
             className="mt-1 p-2 border-2 border-gray-400 rounded-full w-full"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            required
           />
         </div>
         <div className="mb-4">
@@ -58,6 +59,7 @@ const Login = () => {
               className="mt-1 p-2  border-2 border-gray-400 rounded-full w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <span
               className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
