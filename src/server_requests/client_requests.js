@@ -1,11 +1,12 @@
 // api.js
 const apiUrl = process.env.NEXT_PUBLIC_URL;
 // Assuming formData.cv is a File object, you can convert it to a string or set it to null
-export const deleteData_application = async (id) => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}?id=${id}`, {
-      method: "DELETE",
+export const deleteData_application = async (id,path) => {
+  try { console.log(path)
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}?id=${id}&path=${encodeURIComponent(path)}`, {
+      method: 'DELETE',
     });
+    
 
     if (response.ok) {
       return true; // Indicate successful deletion

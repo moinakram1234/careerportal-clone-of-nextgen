@@ -3,6 +3,7 @@ import path from "path";
 import {
   createJobApplication,
   deleteApplication,
+  deleteFile,
   getJobApplication,
 } from "@/prisma/jobapplication";
 
@@ -55,11 +56,15 @@ export default async function handler(req, res) {
       return res.status(200).json(fetchAllApplications);
     } 
     else if(req.method.toLowerCase() === "delete"){
-        const { id } = req.query;
-        await deleteApplication(id);
+        const { id,path } = req.query;
+        const filePath=path
+        console.log(filePath);
+        await deleteFile(filePath);
+        
+         await deleteApplication(id);
         return res
           .status(200)
-          .json({ message: "Job post deleted successfully" });
+          .json({ message: "Job application deleted successfully" });
     }
     else {
       return res.status(405).end(); // Method Not Allowed

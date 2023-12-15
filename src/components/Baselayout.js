@@ -2,9 +2,9 @@ import Navbar from "./navbar";
 
 const BaseLayout = ({ children }) => {
   return (
-    <div className="flex min-h-screen gap-2 bg-white">
+    <div className="flex overflow-x-hidden   bg-white">
       <Navbar />
-      <main className="w-full mt-24 ">
+      <main className=" mt-24 ">
         {children}
       </main>
     </div>

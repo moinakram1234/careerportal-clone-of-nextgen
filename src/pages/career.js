@@ -49,9 +49,9 @@ const Career = () => {
   return (
     <div>
       <BaseLayout>
-        <div className="relative h-72 w-full">
+        <div className="relative  h-72 w-full">
           <img
-            className="h-full w-4/5 ml-36 bg-no-repeat bg-center rounded"
+            className="block mx-auto h-full w-4/5  bg-no-repeat bg-center rounded"
             src="cover.jpg"
             alt="cover image"
           />

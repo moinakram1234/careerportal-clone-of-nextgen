@@ -1,14 +1,12 @@
 import { createJobapplication } from "@/server_requests/client_requests";
 import React, { useState } from "react";
-import { useDropzone } from "react-dropzone";
 import { FaFileUpload } from "react-icons/fa";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import ApplicationPreview from "./applicationpreview";
 
 const ApplicationForm = () => {
   const [istoggle, setToggle] = useState(true);
-  const [fileError, setFileError] = useState(""); // Track file error
+  const [fileError, setFileError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -21,53 +19,66 @@ const ApplicationForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
+
+// Check if the entered phone number is in the format of a Pakistani mobile number
+const isValidPakistanPhoneNumber = (phoneNumber) => {
+  // Regular expression for Pakistan phone number format
+  const phoneRegex = /^(\+92|0092|0)[0-9]{10}$/;
+
+  return phoneRegex.test(phoneNumber);
+};
+
+const handlePhoneChange = (e) => {
+  const { name, value } = e.target;
+
+  // Check the format and set an error message if invalid
+  if (!isValidPakistanPhoneNumber(value) && value !== "") {
+    setFileError("Invalid phone number format. Please enter a valid Pakistani phone number.");
+  } else {
+    setFileError(""); // Clear the error message
+  }
+
+  // Update the state with the entered value
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
+
+
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type === "application/pdf") {
-      setFormData((prevData) => ({
-        ...prevData,
-        cv: file,
-      }));
- 
-      // Display file details in an alert
-      // const fileDetails = `Name: ${file.name}\nSize: ${file.size} bytes\nType: ${file.type}\nType: ${file.path}`;
-      // alert(`Selected file:\n${fileDetails}`);
-  
-      setFileError(""); // Clear file error when a valid PDF is added
+      setFormData((prevData) => ({ ...prevData, cv: file }));
+      setFileError("");
     } else {
       setFileError("Invalid file format. Please upload a PDF file.");
     }
   };
-  
 
-  const handlePreview = () => {
-    setToggle(!istoggle);
-  };
-
-  //submit form Data
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Submit the form data
     const response = await createJobapplication(formData);
+    
+    // Clear the form data and reset the form
     setFormData({
       fullName: "",
-    phone: "",
-    email: "",
-    qualification: "",
-    selectedDepartment: "",
-    cv: "",
-    address: "",
-    })
-    // Optionally, you can handle success or redirect the user
+      phone: "",
+      email: "",
+      qualification: "",
+      selectedDepartment: "",
+      cv: "",
+      address: "",
+    });
+
+    e.target.reset();
     toast(response.message);
   };
+
   return (
     <div>
       {istoggle && (
@@ -84,7 +95,6 @@ const ApplicationForm = () => {
               required
             />
           </label>
-
           <label htmlFor="phone" className="block mb-2">
             Phone:
             <input
@@ -92,7 +102,7 @@ const ApplicationForm = () => {
               id="phone"
               name="phone"
               value={formData.phone}
-              onChange={handleChange}
+              onChange={handlePhoneChange}
               className="border p-2 w-full mt-1"
               required
             />
@@ -145,9 +155,6 @@ const ApplicationForm = () => {
             required
           />
 
-          {fileError && (
-            <p className="text-red-500 mt-2">{fileError}</p>
-          )}
        
           <label htmlFor="address" className="block mb-2">
             Address:
@@ -161,7 +168,10 @@ const ApplicationForm = () => {
               required
             />
           </label>
-
+          {fileError && (
+            <p className="text-red-500 mt-2">{fileError}</p>
+          )}
+       
           <button
             type="submit" // Add type attribute to make it a submit button
             className="bg-blue-500 text-white py-2 px-4 mt-6 rounded-md hover:bg-blue-600"

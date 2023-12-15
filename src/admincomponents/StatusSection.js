@@ -62,7 +62,7 @@ const ApplicationStatus = () => {
     fetchData(process.env.NEXT_PUBLIC_URL, setTotalpost);
     fetchTodayData(process.env.NEXT_PUBLIC_APP_URL, setTodayApplications);
     fetchTodayData(process.env.NEXT_PUBLIC_URL, setTodayPosts);
-  });
+  },{});
 
   return (
     <div className="flex">

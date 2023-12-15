@@ -75,8 +75,8 @@ const RecievedApplications = () => {
     }
   };
   //delete application
-  const deleteApplication = async (applicationId) => {
-    await deleteData_application(applicationId);
+  const deleteApplication = async (applicationId,path) => {
+    await deleteData_application(applicationId,path);
     // After deletion, refresh the list of applications
     const updatedApplications = applications.filter((app) => app.id !== applicationId);
     setApplications(updatedApplications);
@@ -94,7 +94,7 @@ const RecievedApplications = () => {
             key={index}
             className="ml-5 mb-4 h-72 w-2/5  rounded shadow-sm shadow-blue-200 overflow-hidden items-center"
           >
-            <div className="text-right m-5"><button onClick={() => deleteApplication(data.id)} className="text-red-500  hover:text-red-700">
+            <div className="text-right m-5"><button onClick={() => deleteApplication(data.id,data.cv)} className="text-red-500  hover:text-red-700">
                   <FaTrash/>
                 </button>
               </div>
