@@ -14,7 +14,7 @@ import {
   Coverlettericon,
 } from "@/assets/CustomIcons";
 import { FaTrash } from "react-icons/fa";
-import { deleteData_application } from "@/server_requests/client_requests";
+import { deleteData_application, fetchData_application } from "@/server_requests/client_requests";
 const RecievedApplications = () => {
   const [applications, setApplications] = useState([]);
 
@@ -28,13 +28,14 @@ const RecievedApplications = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(process.env.NEXT_PUBLIC_APP_URL); // Replace with your actual API endpoint
-        const data = await response.json();
+        const data = await fetchData_application();
         const today = new Date().toDateString();
         const today_Application_Data = filterDataByDate(data, today);
         setApplications(today_Application_Data);
+        setApplications(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // Handle the error appropriately
+        console.error("Error loading data:", error);
       }
     };
 

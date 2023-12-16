@@ -11,8 +11,12 @@ import {
   Departmenticon,
 } from "@/assets/CustomIcons";
 import BaseLayout from "@/admincomponents/BaseLayout";
-import { fetchData_application } from "@/server_requests/client_requests";
+import {
+  deleteData_application,
+  fetchData_application,
+} from "@/server_requests/client_requests";
 import Link from "next/link";
+import { FaTrash } from "react-icons/fa";
 const ViewallApplications = () => {
   const [applications, setApplications] = useState([]);
   useEffect(() => {
@@ -28,7 +32,14 @@ const ViewallApplications = () => {
 
     loadData();
   }, []);
-
+  const deleteApplication = async (applicationId, path) => {
+    await deleteData_application(applicationId, path);
+    // After deletion, refresh the list of applications
+    const updatedApplications = applications.filter(
+      (app) => app.id !== applicationId
+    );
+    setApplications(updatedApplications);
+  };
   return (
     <BaseLayout>
       <div
@@ -39,9 +50,17 @@ const ViewallApplications = () => {
           <div
             style={{ backgroundColor: "#f3f4f6" }}
             key={index}
-            className="m-5 h-72 w-2/5  rounded shadow-sm shadow-blue-200 overflow-hidden items-center"
+            className="m-2 h-72 w-2/5  rounded shadow-sm shadow-blue-200 overflow-hidden items-center"
           >
-            <div className="ml-5 pt-5 overflow-hidden flex hover:bg-white">
+            <div className="text-right m-5">
+              <button
+                onClick={() => deleteApplication(data.id, data.cv)}
+                className="text-red-500  hover:text-red-700"
+              >
+                <FaTrash />
+              </button>
+            </div>
+            <div className="ml-5 -mt-6 overflow-hidden flex hover:bg-white">
               <i>
                 {" "}
                 <PersonNaneicon />
@@ -90,7 +109,7 @@ const ViewallApplications = () => {
               </i>
               <span className="ml-3 cursor-pointer text-blue-500">
                 <Link href={`${data.cv}`} passHref>
-              Download CV
+                  Download CV
                 </Link>
               </span>
             </div>
