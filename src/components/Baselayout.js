@@ -10,7 +10,7 @@ const BaseLayout = ({ children }) => {
   // Effect to update local storage when the mode changes
 
   return (
-    <div className={`flex overflow-x-hidden min-h-screen bg-white`}>
+    <div className={`flex overflow-x-hidden  min-h-screen bg-white`}>
       <Navbar />
       <main className="mt-24 w-full">
         {children}
