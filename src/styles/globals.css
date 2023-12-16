@@ -95,6 +95,10 @@ body {
 .sidebar__name {
   margin-left: 0.5rem;
 }
+.sidebar__name--active {
+  color: white;
+}
+
 
 [data-collapse="true"] {
   width: 5.3rem;

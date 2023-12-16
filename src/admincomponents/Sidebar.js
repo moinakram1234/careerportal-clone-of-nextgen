@@ -24,7 +24,7 @@ const Sidebar = () => {
             src="/logo.png"
             alt="logo"
           />
-          <p className="sidebar__logo-name">Haidri Beverages</p>
+          <p className="sidebar__logo-name text-gray-500">Haidri Beverages</p>
         </div>
         <ul className="sidebar__list">
           {sidebarItems.map(({ name, href, icon: Icon }) => {
@@ -32,14 +32,16 @@ const Sidebar = () => {
               <li className="sidebar__item" key={name}>
                 <Link
                   className={`sidebar__link ${
-                    router.pathname === href ? "sidebar__link--active" : ""
+                    router.pathname === href ? "sidebar__link--active " : ""
                   }`}
                   href={href}
                 >
                   <span className="sidebar__icon">
                     <Icon />
                   </span>
-                  <span className="sidebar__name">{name}</span>
+                  <span  className={`sidebar__name ${
+                    router.pathname === href ? "sidebar__name--active " : ""
+                  }`}>{name}</span>
                 </Link>
               </li>
             );

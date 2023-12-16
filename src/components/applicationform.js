@@ -81,16 +81,12 @@ const handlePhoneChange = (e) => {
     setIsLoading(false);
   }
 };
-  return (
-    <div>
-    {isLoading && (
-     <div >
-      <Loader/>
-     </div>
-      
-    )}
+return (
+  <div className="container mx-auto p-4">
+    {isLoading && <Loader />}
     {!isLoading && istoggle && (
       <form className="max-w-lg mx-auto" onSubmit={handleSubmit}>
+
           {/* ... other form inputs ... */}
           <label htmlFor="fullName" className="block mb-2">
             Full Name:
@@ -100,7 +96,7 @@ const handlePhoneChange = (e) => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="border p-2 w-full mt-1"
+              className="border p-2 w-full mt-1" // Responsive width
               required
             />
           </label>
@@ -113,7 +109,7 @@ const handlePhoneChange = (e) => {
               name="phone"
               value={formData.phone}
               onChange={handlePhoneChange}
-              className="border p-2 w-full mt-1"
+              className="border p-2 w-full mt-1" // Responsive width
               required
             />
           </label>
@@ -161,7 +157,7 @@ const handlePhoneChange = (e) => {
             type="file"
             accept=".pdf"
             onChange={handleFileChange}
-            className="border p-2 w-full mt-1"
+            className="border p-2 w-full mt-1 sm:w-auto" // Responsive width
             required
           />
 
@@ -182,7 +178,7 @@ const handlePhoneChange = (e) => {
           {fileError && (
             <p className="text-red-500 mt-2">{fileError}</p>
           )}
-         <button
+  <button
             type="submit"
             className="bg-blue-500 text-white py-2 px-4 mt-6 rounded-md hover:bg-blue-600"
           >
@@ -190,7 +186,7 @@ const handlePhoneChange = (e) => {
           </button>
         </form>
       )}
- <ToastContainer />
+      <ToastContainer />
     </div>
   );
 };

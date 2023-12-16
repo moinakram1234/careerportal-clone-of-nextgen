@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { createJobApplication, deleteApplication, getJobApplication } from "prisma/jobapplication";
 import cloudinary from "cloudinary";
 import multer from "multer";
@@ -47,14 +45,14 @@ export default async function handler(req, res) {
         const cvStream = streamifier.createReadStream(cvBuffer);
 
         // Upload the file to Cloudinary
-        const cloudinaryUploadResponse = await cloudinary.v2.uploader.upload_stream(
+        const cloudinaryUploadResponse = cloudinary.v2.uploader.upload_stream(
           { resource_type: "raw", timeout: 60000 }, // Increase the timeout to 60 seconds
           async (error, result) => {
             if (error) {
               console.error("Error uploading to Cloudinary:", error);
               return res.status(500).json({ error: "Internal Server Error" });
             }
-        
+
             // Pass the Cloudinary file URL to the createJobApplication function
             const newApplication = await createJobApplication({
               fullName,
@@ -65,7 +63,7 @@ export default async function handler(req, res) {
               cv: result.secure_url, // Use the secure URL from Cloudinary
               address,
             });
-        
+
             return res.status(201).json(newApplication);
           }
         );
