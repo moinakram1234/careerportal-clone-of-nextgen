@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ApplicationForm = () => {
   const [istoggle, setToggle] = useState(true);
+  const [pdffile, setPdffile] = useState(null);
   const [fileError, setFileError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
@@ -52,30 +53,25 @@ const handlePhoneChange = (e) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setFormData((prevData) => ({ ...prevData, cv: file }));
-      setFileError("");
-    } else {
-      setFileError("Invalid file format. Please upload a PDF file.");
-    }
+    setPdffile(file)
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await createJobapplication(formData);
+    const response = await createJobapplication(formData,pdffile);
     
     // Clear the form data and reset the form
-    setFormData({
-      fullName: "",
-      phone: "",
-      email: "",
-      qualification: "",
-      selectedDepartment: "",
-      cv: "",
-      address: "",
-    });
+    // setFormData({
+    //   fullName: "",
+    //   phone: "",
+    //   email: "",
+    //   qualification: "",
+    //   selectedDepartment: "",
+    //   cv: "",
+    //   address: "",
+    // });
 
-    e.target.reset();
+    // e.target.reset();
     toast(response.message);
   };
 

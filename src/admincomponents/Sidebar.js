@@ -11,7 +11,7 @@ const Sidebar = () => {
   const { isCollapsed, toggleSidebarcollapse } = useContext(SidebarContext);
 
   return (
-    <div className="sidebar__wrapper">
+    <div className="sidebar__wrapper min-h-screen">
       <button className="btn" onClick={toggleSidebarcollapse}>
         {isCollapsed ? <MdKeyboardArrowRight /> : <MdKeyboardArrowLeft />}
       </button>

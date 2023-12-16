@@ -1,12 +1,18 @@
 // api.js
 const apiUrl = process.env.NEXT_PUBLIC_URL;
+const apiAppUrl= process.env.NEXT_PUBLIC_APP_URL;
 // Assuming formData.cv is a File object, you can convert it to a string or set it to null
-export const deleteData_application = async (id,path) => {
-  try { console.log(path)
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}?id=${id}&path=${encodeURIComponent(path)}`, {
-      method: 'DELETE',
-    });
-    
+export const deleteData_application = async (id, path) => {
+  try {
+    console.log(path);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}?id=${id}&path=${encodeURIComponent(
+        path
+      )}`,
+      {
+        method: "DELETE",
+      }
+    );
 
     if (response.ok) {
       return true; // Indicate successful deletion
@@ -19,46 +25,48 @@ export const deleteData_application = async (id,path) => {
     return false; // Indicate deletion failure
   }
 };
-const createJobapplication = async (formData) => {
+const createJobapplication = async (formData, pdfFile) => {
   try {
-    // Convert File to Base64 string
-    const cvBase64 = formData.cv ? await convertFileToBase64(formData.cv) : null;
+    const bodyFormData = new FormData();
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}`, {
+    // Append form data to FormData
+    for (const key in formData) {
+      bodyFormData.append(key, formData[key]);
+    }
+
+    // Append PDF file to FormData
+    bodyFormData.append('pdfFile', pdfFile, 'application.pdf');
+
+    const response = await fetch(`${apiAppUrl}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...formData,
-        cv: cvBase64, // Set cv to the Base64 string or null
-      }),
+      body: bodyFormData,
     });
 
     if (response.ok) {
       return response.json();
     } else {
-      throw new Error(`Error creating job post: ${response.statusText}`);
+      throw new Error(`Error creating application post: ${response.statusText}`);
     }
   } catch (error) {
-    console.error("Error creating job post:", error);
+    console.error("Error creating application post:", error);
     throw new Error("Internal Server Error");
   }
 };
+
 // Helper function to convert File to Base64 string
-const convertFileToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
+// const convertFileToBase64 = (file) => {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.onloadend = () => resolve(reader.result.split(',')[1]);
+//     reader.onerror = reject;
+//     reader.readAsDataURL(file);
+//   });
+// };
 //fetch applications
 // api.js (or any other suitable file name)
 export const fetchData_application = async () => {
   try {
-    const response = await fetch(process.env.NEXT_PUBLIC_APP_URL); // Replace with your actual API endpoint
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}`); // Replace with your actual API endpoint
     const data = await response.json();
     return data;
   } catch (error) {
@@ -85,9 +93,6 @@ export const deleteJobPost = async (id) => {
     return false; // Indicate deletion failure
   }
 };
-
-
-
 
 const createJobPost = async (formData) => {
   try {
