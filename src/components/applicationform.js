@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { FaFileUpload } from "react-icons/fa";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from "./loader";
 
 const ApplicationForm = () => {
   const [istoggle, setToggle] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [pdffile, setPdffile] = useState(null);
   const [fileError, setFileError] = useState("");
   const [formData, setFormData] = useState({
@@ -14,7 +16,6 @@ const ApplicationForm = () => {
     email: "",
     qualification: "",
     selectedDepartment: "",
-    cv: "",
     address: "",
   });
 
@@ -58,27 +59,39 @@ const handlePhoneChange = (e) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await createJobapplication(formData,pdffile);
-    
-    // Clear the form data and reset the form
-    // setFormData({
-    //   fullName: "",
-    //   phone: "",
-    //   email: "",
-    //   qualification: "",
-    //   selectedDepartment: "",
-    //   cv: "",
-    //   address: "",
-    // });
-
-    // e.target.reset();
-    toast(response.message);
-  };
-
+    setIsLoading(true);
+    try {
+      const response = await createJobapplication(formData, pdffile);
+      toast(response.message);   // Clear the form data and reset the form
+    setFormData({
+      fullName: "",
+      phone: "",
+      email: "",
+      qualification: "",
+      selectedDepartment: "",
+      cv: "",
+      address: "",
+    });
+    setPdffile(null);
+    e.target.reset();
+  } catch (error) {
+    console.error('Error submitting application:', error);
+    toast.error('Error submitting application. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <div>
-      {istoggle && (
-        <form className="max-w-lg mx-auto" onSubmit={handleSubmit}>
+    {isLoading && (
+     <div >
+      <Loader/>
+     </div>
+      
+    )}
+    {!isLoading && istoggle && (
+      <form className="max-w-lg mx-auto" onSubmit={handleSubmit}>
+          {/* ... other form inputs ... */}
           <label htmlFor="fullName" className="block mb-2">
             Full Name:
             <input
@@ -91,6 +104,7 @@ const handlePhoneChange = (e) => {
               required
             />
           </label>
+          {/* ... other form inputs ... */}
           <label htmlFor="phone" className="block mb-2">
             Phone:
             <input
@@ -164,26 +178,19 @@ const handlePhoneChange = (e) => {
               required
             />
           </label>
+      
           {fileError && (
             <p className="text-red-500 mt-2">{fileError}</p>
           )}
-       
-          <button
-            type="submit" // Add type attribute to make it a submit button
+         <button
+            type="submit"
             className="bg-blue-500 text-white py-2 px-4 mt-6 rounded-md hover:bg-blue-600"
           >
             Submit Application
           </button>
         </form>
       )}
-
-      {/* {!istoggle && (
-        <ApplicationPreview
-          formData={formData}
-          onEdit={() => setToggle(true)}
-        />
-      )} */}
-      <ToastContainer/>
+ <ToastContainer />
     </div>
   );
 };

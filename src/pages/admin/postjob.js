@@ -5,6 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createJobPost } from "@/server_requests/client_requests";
+import Loader from "@/components/loader";
 const ReactQuill = dynamic(
   () => import('react-quill'),
   {ssr: false}
@@ -15,10 +16,10 @@ const PostJobs = () => {
   const [jobtype, setJobtype] = useState("");
   const [joblocation, setJobLocation] = useState("");
   const [description, setDescription] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     try {
       const jobData = {
         jobtitle,
@@ -41,6 +42,9 @@ const PostJobs = () => {
       console.error('Error creating job post:', error);
       toast('Failed to create job post. Please try again later.', { type: 'error' });
     }
+    finally{
+      setIsLoading(false);
+    }
   };
   const handleQuillChange = (value) => {
     setDescription(value);
@@ -48,8 +52,10 @@ const PostJobs = () => {
   
   return (
     <BaseLayout>
-      {" "}
-      <div className=" max-h-screen mt-10 mx-auto w-1/2 p-6 bg-white rounded-md shadow-md">
+      {isLoading&&(     <div >
+       <Loader />
+     </div>)}
+     { !isLoading&&(<div className=" max-h-screen mt-10 mx-auto w-1/2 p-6 bg-white rounded-md shadow-md">
         <h2 className="text-2xl font-bold mb-6">Post a Job</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -125,7 +131,7 @@ const PostJobs = () => {
             Post Job
           </button>
         </form>
-      </div> <ToastContainer />
+      </div>)} <ToastContainer />
     </BaseLayout>
   );
 };

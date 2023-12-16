@@ -119,7 +119,7 @@ const RecievedApplications = () => {
                   <a href={`${data.cv}`} download="resume.pdf">Download CV</a>
               
               </span>
-              \
+              
             </div>
           </div>
         ))}

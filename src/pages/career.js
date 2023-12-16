@@ -49,6 +49,37 @@ const Career = () => {
   return (
     <div>
       <BaseLayout>
+ 
+      <div className="relative h-72 w-full">
+  <img
+    className="block mx-auto h-full sm:w-full md:w-3/4 bg-no-repeat bg-center rounded"
+    src="cover.jpg"
+    alt="cover image"
+  />
+
+  <div className="absolute inset-0 flex flex-col items-center justify-center">
+    {/* Typewriter effect */}
+    <NoSSR>
+      <div
+        className="text-5xl text-white font-signature rounded"
+        style={{ backgroundColor: "#005794" }}
+      >
+        <Typewriter
+          options={{
+            strings: ["Join the Team"],
+            autoStart: true,
+            loop: true,
+          }}
+        />
+      </div>
+    </NoSSR>
+
+    <h5 className="text-white text-center sm:w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto">
+      Relaxed Atmosphere, Best Working Environment, Top Notch Projects...
+    </h5>
+  </div>
+</div>
+
         {/* ... your existing code ... */}
         <div className="w-5/6 mx-auto ">
           {jobPosts &&
