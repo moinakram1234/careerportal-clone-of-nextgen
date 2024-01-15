@@ -1,4 +1,4 @@
-import Login from "../admin/login";
+import Dashboard from "./dashboard";
 
 const Home = () => {
   // const totalUsers = 100; // Replace with the actual total number of users
@@ -7,7 +7,7 @@ const Home = () => {
   // const cvPercentage = (usersWithCV / totalUsers) * 100;
   return (
     <div>
-      <Login />
+    <Dashboard/>
     </div>
   );
 };

@@ -1,14 +1,17 @@
 // components/Modal.js
 
-import React from 'react';
+import React from "react";
 
 const Modal = ({ children, onClose }) => {
   return (
-    <div  className="fixed  inset-0 flex items-center justify-center">
+    <div className="fixed  inset-0 flex items-center justify-center">
       <div className="bg-black bg-opacity-50 absolute inset-0 "></div>
-      <div  className="bg-white p-9  rounded-md z-10">
+      <div className="bg-white p-9  rounded-md z-10">
         {children}
-        <button className="absolute bg-blue-500 text-white py-2 px-4 rounded   ml-64 mt-72  hover:bg-blue-600" onClick={onClose}>
+        <button
+          className="absolute bg-blue-500 text-white py-2 px-4 rounded   ml-64 mt-72  hover:bg-blue-600"
+          onClick={onClose}
+        >
           Close
         </button>
       </div>

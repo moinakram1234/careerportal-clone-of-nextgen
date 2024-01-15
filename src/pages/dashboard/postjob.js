@@ -1,11 +1,14 @@
 import BaseLayout from "../../admincomponents/BaseLayout";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import dynamic from 'next/dynamic';
 import "react-quill/dist/quill.snow.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createJobPost } from "@/server_requests/client_requests";
 import Loader from "@/components/loader";
+import { useRouter } from "next/router";
+import { isTokenExpired } from "../tokenUtils";
+import parseJwt from "./parsetoken";
 const ReactQuill = dynamic(
   () => import('react-quill'),
   {ssr: false}
@@ -17,6 +20,55 @@ const PostJobs = () => {
   const [joblocation, setJobLocation] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isValidToken, setIsValidToken] = useState(false);
+  const router = useRouter();
+
+
+  const redirectToHome = () => router.push('/');
+
+  const checkTokenExpiration = async () => {
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Token is not present, redirect to home
+      redirectToHome();
+      return;
+    }
+       
+ 
+    const tokenparse = parseJwt(token);
+
+    if (!tokenparse || tokenparse.isadmin === undefined) {
+      // Token parsing failed or isadmin property is not present, redirect to home
+      redirectToHome();
+      return;
+    }
+    
+    if (tokenparse.isadmin === false) {
+      // User is not an admin, redirect to home
+      redirectToHome();
+      return;
+    }
+    if (isTokenExpired(token)) {
+      // Token is expired, remove it and redirect to home
+      localStorage.removeItem('token');
+      console.log(token);
+      setIsValidToken(false);
+      redirectToHome();
+    } else {
+      // Token is valid, update state
+      setIsValidToken(true);
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    checkTokenExpiration();
+  }, []); // The empty dependency array ensures that this effect runs only once when the component mounts
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -51,17 +103,17 @@ const PostJobs = () => {
   };
   
   return (
-    <BaseLayout>
+  <div>  {isValidToken==true?(<BaseLayout>
       {isLoading&&(     <div >
        <Loader />
      </div>)}
-     { !isLoading&&(<div className=" max-h-screen mt-10 mx-auto w-1/2 p-6 bg-white rounded-md shadow-md">
-        <h2 className="text-2xl font-bold mb-6">Post a Job</h2>
+     { !isLoading&&(<div className=" max-h-screen  mx-auto w-1/2 p-6 bg-white rounded-md shadow-md">
+        <h2 className="text-2xl font-bold tracking-tight mb-6">Post a Job</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="jobtitle"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-500 text-sm font-bold mb-2"
             >
               Job Title
             </label>
@@ -78,7 +130,7 @@ const PostJobs = () => {
           <div className="mb-4">
             <label
               htmlFor="jobtype"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-500 text-sm font-bold mb-2"
             >
               Job Type
             </label>
@@ -95,7 +147,7 @@ const PostJobs = () => {
           <div className="mb-4">
             <label
               htmlFor="jobLocation"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-500 text-sm font-bold mb-2"
             >
               Job Location
             </label>
@@ -112,7 +164,7 @@ const PostJobs = () => {
           <div className="mb-4">
             <label
               htmlFor="description"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-500 text-sm font-bold mb-2"
             >
               Job Description
             </label>
@@ -132,7 +184,7 @@ const PostJobs = () => {
           </button>
         </form>
       </div>)} <ToastContainer />
-    </BaseLayout>
+    </BaseLayout>):<p>session expired</p>}</div>
   );
 };
 

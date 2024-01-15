@@ -25,7 +25,7 @@ export const deleteData_application = async (id, path) => {
     return false; // Indicate deletion failure
   }
 };
-const createJobapplication = async (formData, pdfFile) => {
+const createJobapplication = async (formData, pdfFile, postid) => {
   try {
     const bodyFormData = new FormData();
 
@@ -37,6 +37,9 @@ const createJobapplication = async (formData, pdfFile) => {
     // Append PDF file to FormData
     bodyFormData.append('pdfFile', pdfFile, 'application.pdf');
 
+    // Append postid to FormData
+    bodyFormData.append('postid', postid);
+    
     const response = await fetch(`${apiAppUrl}`, {
       method: "POST",
       body: bodyFormData,
@@ -94,6 +97,7 @@ export const deleteJobPost = async (id) => {
   }
 };
 
+
 const createJobPost = async (formData) => {
   try {
     const response = await fetch(`${apiUrl}`, {
@@ -131,8 +135,42 @@ const fetchJobPosts = async () => {
     return [];
   }
 };
+//archive post and application delete
+export const deleteArchiveJobPost = async (id) => {
+  try {
+    const response = await fetch(`/api/Archived?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      return true; // Indicate successful deletion
+    } else {
+      console.error("Error deleting job post:", response.statusText);
+      return false; // Indicate deletion failure
+    }
+  } catch (error) {
+    console.error("Error deleting job post:", error);
+    return false; // Indicate deletion failure
+  }
+};
 
 // components/api.js
+export const fetchJobPostDetails = async (postid) => {
+  try {
+    const response = await fetch(`${apiUrl}?id=${postid}`);
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      console.error("Error fetching job post details:", response.statusText);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching job post details:", error);
+    return null;
+  }
+};
+
 
 const updateJobPost = async ({
   id,
@@ -164,6 +202,59 @@ const updateJobPost = async ({
     }
   } catch (error) {
     console.error("Error updating job post:", error);
+    throw error;
+  }
+};
+
+//enable feature
+// client_requests.js
+
+export const updateEnableStatus = async (id, enablestatus) => {
+
+  
+  try {
+    console.log(enablestatus,id)
+    const response = await fetch(`${apiUrl}?id=${id}`, {
+      method: 'PATCH', // or 'PUT' depending on your server's API
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        enable: enablestatus,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    // If you need to process the response, you can do so here
+    // const data = await response.json();
+
+    // You can return the data if needed
+    // return data;
+  } catch (error) {
+    console.error('Error updating enable status:', error);
+    throw error; // Rethrow the error to be caught by the calling function
+  }
+};
+
+//retore application and job posts
+
+export const updateRestore = async (id) => {
+  try {
+    const response = await fetch(`/api/Archived?id=${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error updating status:', error);
     throw error;
   }
 };

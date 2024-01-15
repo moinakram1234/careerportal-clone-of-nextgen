@@ -1,37 +1,44 @@
 // components/ApplicationPreview.js
 
-import React from 'react';
+import React from "react";
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaUser, FaPhone, FaEnvelope, FaGraduationCap, FaBuilding, FaMapMarkerAlt } from 'react-icons/fa';
-import { createJobapplication } from '@/server_requests/client_requests';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  FaUser,
+  FaPhone,
+  FaEnvelope,
+  FaGraduationCap,
+  FaBuilding,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+import { createJobapplication } from "@/server_requests/client_requests";
 
 const ApplicationPreview = ({ formData, onEdit }) => {
-    const handleSubmit = async () => {
-        try {
-          // Assuming formData is properly defined in your component state
-          const newApplication = await createJobapplication(formData);
-      
-          // The job application was successfully created
-          console.log('Job application created successfully:', newApplication);
-      
-          // You can use toast or any other notification library here
-          // Example with the toast library
-          toast.success('application Submited successfully');
-        } catch (error) {
-          console.error('Error creating job application:', error);
-      
-          // Handle errors appropriately, you might want to show an error message to the user
-          // Example with the toast library
-          toast.error('Error creating job application');
-        }
-      };
-      
+  const handleSubmit = async () => {
+    try {
+      // Assuming formData is properly defined in your component state
+      const newApplication = await createJobapplication(formData);
+
+      // The job application was successfully created
+      console.log("Job application created successfully:", newApplication);
+
+      // You can use toast or any other notification library here
+      // Example with the toast library
+      toast.success("application Submited successfully");
+    } catch (error) {
+      console.error("Error creating job application:", error);
+
+      // Handle errors appropriately, you might want to show an error message to the user
+      // Example with the toast library
+      toast.error("Error creating job application");
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto">
       <h2 className="text-2xl font-bold mb-4">Application Preview</h2>
-      
+
       <div className="mb-4">
         <div className="flex items-center">
           <FaUser className="mr-2" />
@@ -98,4 +105,3 @@ const ApplicationPreview = ({ formData, onEdit }) => {
 };
 
 export default ApplicationPreview;
-

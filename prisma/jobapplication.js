@@ -3,7 +3,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-import fs from "fs";
+import { getSpecificPosts } from "./jobpost";
 export const createJobApplication = async (formData) => {
   try {
     const {
@@ -14,6 +14,7 @@ export const createJobApplication = async (formData) => {
       address,
       cv,
       selectedDepartment,
+      postid,
     } = formData;
 
     const appExist = await prisma.jobApplication.findUnique({
@@ -36,6 +37,7 @@ export const createJobApplication = async (formData) => {
         address,
         cv,
         selectedDepartment,
+        postid,
       },
     });
 
@@ -46,20 +48,46 @@ export const createJobApplication = async (formData) => {
   }
 };
 
-export const getJobApplication = async (formData) => {
+export const getJobApplication = async () => {
   try {
     // Note: You may need to adjust this based on your actual Prisma model
     const getAllApplications = await prisma.jobApplication.findMany({
       orderBy: {
-        createdAt: "desc", // Use 'desc' instead of { sort: 'Desc' }
+        createdAt: "desc",
       },
     });
-    return getAllApplications;
+
+    // Fetch job post data for each application
+    const applicationsWithJobPostData = await Promise.all(
+      getAllApplications.map(async (application) => {
+        const postid = application.postid;
+        const jobpostApp = await getSpecificPosts(postid);
+        return { ...application, jobpostApp };
+      })
+    );
+
+    return applicationsWithJobPostData;
   } catch (error) {
-    console.error("Error creating job application:", error);
+    console.error("Error fetching job applications:", error);
     throw error;
   }
 };
+
+// export const getJobApplicationbyid = async (id) => {
+//   try {
+//     // Note: You may need to adjust this based on your actual Prisma model
+//     const getAllApplicationsbyid = await prisma.jobApplication.findUnique({
+//       where: {
+//         id: id,
+//       },
+//     });
+
+//     return getAllApplicationsbyid;
+//   } catch (error) {
+//     console.error("Error fetching job applications:", error);
+//     throw error;
+//   }
+// };
 
 export const deleteApplication = async (id) => {
   const jobApplicationData = await prisma.jobApplication.delete({
@@ -69,22 +97,4 @@ export const deleteApplication = async (id) => {
   });
 
   return jobApplicationData;
-};
-
-export const deleteFile = async (filePath) => {
-  try {
-    // Check if the file exists before attempting to delete
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      console.log("File deleted successfully");
-      return true; // Return true to indicate successful deletion
-    } else {
-      console.error("File not found");
-      console.log(filePath)
-      return false; // Return false to indicate file not found
-    }
-  } catch (error) {
-    console.error("Error deleting file:", error);
-    throw error; // Throw the error to indicate a failure
-  }
 };

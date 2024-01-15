@@ -1,10 +1,10 @@
 // components/UpdatePost.js
 
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
+import { useState } from "react";
+import dynamic from "next/dynamic";
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-import { updateJobPost } from '@/server_requests/client_requests';
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import { updateJobPost } from "@/server_requests/client_requests";
 import "react-quill/dist/quill.snow.css";
 const UpdatePost = ({ jobPost, onClose }) => {
   const [jobtitle, setJobtitle] = useState(jobPost.jobtitle);
@@ -25,10 +25,10 @@ const UpdatePost = ({ jobPost, onClose }) => {
         description,
       });
 
-      console.log('Job post updated successfully:', updatedJobPost);
+      console.log("Job post updated successfully:", updatedJobPost);
       onClose();
     } catch (error) {
-      console.error('Error updating job post:', error);
+      console.error("Error updating job post:", error);
     }
   };
 
@@ -43,7 +43,10 @@ const UpdatePost = ({ jobPost, onClose }) => {
         <h2 className="text-2xl font-bold mb-6">Edit Job Post</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="jobtitle" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="jobtitle"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Job Title
             </label>
             <input
@@ -57,7 +60,10 @@ const UpdatePost = ({ jobPost, onClose }) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="jobtype" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="jobtype"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Job Type
             </label>
             <input
@@ -71,7 +77,10 @@ const UpdatePost = ({ jobPost, onClose }) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="joblocation" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="joblocation"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Job Location
             </label>
             <input
@@ -85,7 +94,10 @@ const UpdatePost = ({ jobPost, onClose }) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="description"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Job Description
             </label>
             {/* Replace ReactQuill with a standard text input */}
