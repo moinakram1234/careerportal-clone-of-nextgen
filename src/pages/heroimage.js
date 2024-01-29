@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import imageArray from '@/components/images';
+import React, { useState, useRef } from 'react';
+
+const videoSources = ["/images/PEPSI_video2.mp4", "/images/PEPSI_video1.mp4"];
 
 const ImageGallery = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videoRef = useRef();
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      // Change the current index to the next image in the array
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % imageArray.length);
-    }, 5000); // Change image every 2 seconds
-
-    return () => clearInterval(intervalId); // Cleanup the interval on component unmount
-  }, []); // Run effect only once on component mount
+  const handleVideoEnd = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoSources.length);
+  };
 
   return (
     <div>
-      <img
-         style={{
-            height: '700px',
-     
-          }}
-        className="block w-full object-cover object-center rounded bg-no-repeat filter brightness-75 blur-sm"
-        src={imageArray[currentIndex].src}
-        alt={imageArray[currentIndex].alt}
-     
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        onEnded={handleVideoEnd}
+        style={{
+          height: '700px',
+        }}
+        className="block w-full object-cover object-center rounded bg-no-repeat "
+        src={videoSources[currentVideoIndex]}
+        type="video/mp4"
       />
     </div>
   );

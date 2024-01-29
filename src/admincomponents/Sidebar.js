@@ -103,7 +103,7 @@ const Sidebar = () => {
                     href={href}
                   >
                     <span className="sidebar__icon ">
-                      <Icon />
+                      <Icon  color="#FFC83D"/>
                     </span>
                     <span
                       className={`sidebar__name ${

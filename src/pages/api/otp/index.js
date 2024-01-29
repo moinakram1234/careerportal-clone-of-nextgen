@@ -1,6 +1,7 @@
 // pages/api/send-otp.js
 
-import { sendOtpEmail } from "prisma/otp";
+import { sendOtpEmail } from "mongodb/otp";
+
 
 
 export default async function handler(req, res) {

@@ -1,8 +1,9 @@
-import { createJobApplication, deleteApplication, getJobApplication } from "prisma/jobapplication";
+
 import cloudinary from "cloudinary";
 import multer from "multer";
 import streamifier from "streamifier";
 import { createAction } from "@reduxjs/toolkit";
+import { createJobApplication, deleteApplication, getJobApplication } from "mongodb/jobapplication";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -42,6 +43,11 @@ export default async function handler(req, res) {
           selectedDepartment,
           address,
           postid,
+          experience,
+          countryorregion,
+          city,
+          stateorprovince,
+          zipcode,
         } = req.body;
     
         // Access the uploaded file in memory
@@ -69,8 +75,12 @@ export default async function handler(req, res) {
               cv: result.secure_url, // Use the secure URL from Cloudinary
               address,
               postid: postid[1],
+              experience,
+              countryorregion,
+              city,
+              stateorprovince,
+              zipcode,
             });
-
             return res.status(201).json(newApplication);
           }
         );
@@ -82,8 +92,8 @@ export default async function handler(req, res) {
       const fetchAllApplications = await getJobApplication();
       return res.status(200).json(fetchAllApplications);
     } else if (req.method.toLowerCase() === "delete") {
-      const { id, url } = req.query;
-
+      const { _id, path } = req.query;
+      const url = decodeURIComponent(path);
       // Delete the file from Cloudinary
       const publicId = url.split('/').pop().split('.')[0];
       cloudinary.v2.uploader.destroy(publicId, async (error, result) => {
@@ -93,7 +103,7 @@ export default async function handler(req, res) {
         }
 
         // Delete the application from the database
-        await deleteApplication(id);
+        await deleteApplication(_id);
         return res.status(200).json({ message: "Job post deleted successfully" });
       });
     } else {

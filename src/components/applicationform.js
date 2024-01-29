@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "./loader";
 
-const ApplicationForm = ({ onClose, postid }) => {
+const ApplicationForm = ({postid }) => {
   const [istoggle, setToggle] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [pdffile, setPdffile] = useState(null);

@@ -14,18 +14,10 @@ const SwitchButton = () => {
   return (
     <div className="flex items-center space-x-2">
       <label htmlFor="darkModeSwitch" className="cursor-pointer">
-        <input
-          id="darkModeSwitch"
-          type="checkbox"
-          onChange={handleToggleDarkMode}
-          checked={darkMode}
-          className="hidden"
-        />
-        <div className={`w-14 h-7  rounded-full p-1 transition ${darkMode ? 'bg-white' : 'bg-black'}`}>
-          <div className={`bg-white w-7 h-5 rounded-full  shadow-md transform ${darkMode ? 'translate-x-6' : ''} transition`}>
-          {darkMode? <div className='ml-1 text-black ' ><MdLightMode/></div>:<div className='ml-1 text-black' ><MdDarkMode/></div>}
+          <div onClick={()=>handleToggleDarkMode()} className={` shadow  mr-4 rounded-full `}>
+          {darkMode? <div className='ml-1 text-yellow-300 ' ><MdLightMode size={30} /></div>:<div className='ml-1 text-black' ><MdDarkMode size={30} /></div>}
           </div>
-        </div>
+      
       </label>
     </div>
   );

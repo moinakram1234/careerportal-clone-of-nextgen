@@ -12,7 +12,7 @@ const sidebarItems = [
     icon: AiOutlineHome,
   },
   {
-    name: "Post Job",
+    name: "Post a Job",
     href: "/dashboard/postjob",
     icon: MdOutlinePostAdd,
   },
@@ -22,7 +22,7 @@ const sidebarItems = [
     icon: IoDocumentAttach,
   },
   {
-    name: "View all job post",
+    name: "View posts",
     href: "/dashboard/viewpost",
     icon: IoEye,
   },

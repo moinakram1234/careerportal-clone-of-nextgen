@@ -11,7 +11,7 @@ const BaseLayout = ({ children }) => {
   return (
     <div
       className={`flex overflow-x-hidden min-h-screen ${
-        darkMode ? "bg-black" : "bg-gray-100"
+        darkMode ? "bg-[#292929]" : "bg-white"
       }`}
     >
       <Navbar />

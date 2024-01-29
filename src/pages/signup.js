@@ -56,15 +56,15 @@ const Signup = () => {
     <div className="bg-white  grid-col-2 flex">
       <div className="bg-login-image lg:flex hidden w-[40%] brightness-75 blur-sm"></div>
       <div className="lg:w-[60%] w-[100%] pt-5">
-        <div className="flex gap-5">
-          <img className="w-24 h-20" src="logo.png" alt="logo" />
-          <h3 className="text-3xl mt-12 text-gray-500">Haidri Beverages</h3>
+      <div className="flex gap-5 mt-5 justify-center">
+          <img className="w-20 h-20" src="logo.png" alt="logo" />
+          <h3 className="text-3xl mt-5 text-gray-500">Haidri Beverages</h3>
         </div>
         <main className="w-full h-screen mt-10 flex justify-center ">
           <div className=" h-3/5 border-2 border-gray-200 bg-white rounded w-96 p-4">
             <form  onSubmit={handleSignup}>
               <div className="flex justify-between">
-                <h1 className="text-xl font-bold text-gray-400 mb-4">sign up</h1>
+                <h1 className="text-xl font-bold  mb-4">sign up</h1>
               </div>
               <div className="mb-4">
                 <label

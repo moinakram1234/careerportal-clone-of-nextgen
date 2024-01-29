@@ -1,6 +1,7 @@
 // pages/api/changepassword.js
 
-import { changePassword } from "prisma/user";
+import { changePassword } from "mongodb/user";
+
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

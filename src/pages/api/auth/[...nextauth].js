@@ -24,5 +24,5 @@ export default NextAuth({
     // ...add more providers here
   ],
   // Add any additional configurations here
-  // secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
 });

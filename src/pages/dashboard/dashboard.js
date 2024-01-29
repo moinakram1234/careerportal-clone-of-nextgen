@@ -1,30 +1,29 @@
 // Dashboard.js
-import { useRouter } from 'next/router';
-import BaseLayout from '../../admincomponents/BaseLayout';
-import ApplicationStatus from '../../admincomponents/StatusSection';
-import RecievedApplications from '../../admincomponents/LatestApplications';
-import BarChart from '@/admincomponents/barchart';
-import { useEffect, useState } from 'react';
-import { isTokenExpired } from '../tokenUtils';
-import parseJwt from './parsetoken';
+import { useRouter } from "next/router";
+import BaseLayout from "../../admincomponents/BaseLayout";
+import ApplicationStatus from "../../admincomponents/StatusSection";
+import RecievedApplications from "../../admincomponents/LatestApplications";
+import BarChart from "@/admincomponents/barchart";
+import { useEffect, useState } from "react";
+import { isTokenExpired } from "../tokenUtils";
+import parseJwt from "./parsetoken";
+import GetNameFromEmail from "@/components/getname_from_email";
 
 const Dashboard = () => {
   const router = useRouter();
   const [isValidToken, setIsValidToken] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const redirectToHome = () => router.push('/');
+  const [tokenData, setTokenData] = useState(null);
+  const redirectToHome = () => router.push("/");
 
   const checkTokenExpiration = async () => {
-    
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
       // Token is not present, redirect to home
       redirectToHome();
       return;
     }
-       
- 
+
     const tokenparse = parseJwt(token);
 
     if (!tokenparse || tokenparse.isadmin === undefined) {
@@ -32,7 +31,7 @@ const Dashboard = () => {
       redirectToHome();
       return;
     }
-    
+
     if (tokenparse.isadmin === false) {
       // User is not an admin, redirect to home
       redirectToHome();
@@ -40,7 +39,7 @@ const Dashboard = () => {
     }
     if (isTokenExpired(token)) {
       // Token is expired, remove it and redirect to home
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
       console.log(token);
       setIsValidToken(false);
       redirectToHome();
@@ -53,23 +52,46 @@ const Dashboard = () => {
 
   useEffect(() => {
     checkTokenExpiration();
+    setTokenData(parseJwt(localStorage.getItem("token")));
   }, []); // The empty dependency array ensures that this effect runs only once when the component mounts
 
-  return (
+  const signOut_token = () => {
     
+    setTokenData(null);
+    localStorage.removeItem("token");
+    router.push("/");
+  };
+  return (
     <div>
-      {isValidToken==true?( <div><div className="overflow-hidden">
-      <BaseLayout>
-      <h2 class="text-3xl font-bold tracking-tight pt-10">Hi, Welcome To Career Portal 👋</h2>
-        {/* The above styles set a maximum height of 80% of the viewport height and enable vertical scrolling */}
-        <ApplicationStatus />
-        <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-3">
-        <BarChart/>
-          <RecievedApplications />
+      {isValidToken == true ? (
+        <div>
+          <div >
+            <BaseLayout>
+            {tokenData && (
+                <din class='flex gap-5 justify-end pt-10 mr-4 '>
+                <GetNameFromEmail email={tokenData.email} />
+                <button className="text-sm p-2 rounded bg-[#FFC83D]" onClick={() => signOut_token()}>
+                  Sign out
+                </button>
+              </din>
+            )  
+            }
+
+              <h2 class="text-3xl ml-4 font-bold tracking-tight ">
+                Hi, Welcome To Career Portal 👋
+              </h2>
+              {/* The above styles set a maximum height of 80% of the viewport height and enable vertical scrolling */}
+              <ApplicationStatus />
+              <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-3">
+                <BarChart />
+                <RecievedApplications />
+              </div>
+            </BaseLayout>
+          </div>
         </div>
-      </BaseLayout>
-    </div></div>):<p>session expired</p>}
-     
+      ) : (
+        <p>session expired</p>
+      )}
     </div>
   );
 };

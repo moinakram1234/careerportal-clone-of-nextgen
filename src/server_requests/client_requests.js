@@ -2,11 +2,11 @@
 const apiUrl = process.env.NEXT_PUBLIC_URL;
 const apiAppUrl= process.env.NEXT_PUBLIC_APP_URL;
 // Assuming formData.cv is a File object, you can convert it to a string or set it to null
-export const deleteData_application = async (id, path) => {
+export const deleteData_application = async (_id, path) => {
   try {
     console.log(path);
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}?id=${id}&path=${encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_APP_URL}?_id=${_id}&path=${encodeURIComponent(
         path
       )}`,
       {
@@ -79,9 +79,9 @@ export const fetchData_application = async () => {
 };
 
 // api.js (or any other suitable file name)
-export const deleteJobPost = async (id) => {
+export const deleteJobPost = async (_id) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}?id=${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}?_id=${_id}`, {
       method: "DELETE",
     });
 
@@ -136,9 +136,9 @@ const fetchJobPosts = async () => {
   }
 };
 //archive post and application delete
-export const deleteArchiveJobPost = async (id) => {
+export const deleteArchiveJobPost = async (_id) => {
   try {
-    const response = await fetch(`/api/Archived?id=${id}`, {
+    const response = await fetch(`/api/Archived?_id=${_id}`, {
       method: "DELETE",
     });
 
@@ -157,7 +157,7 @@ export const deleteArchiveJobPost = async (id) => {
 // components/api.js
 export const fetchJobPostDetails = async (postid) => {
   try {
-    const response = await fetch(`${apiUrl}?id=${postid}`);
+    const response = await fetch(`${apiUrl}?_id=${postid}`);
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -173,7 +173,7 @@ export const fetchJobPostDetails = async (postid) => {
 
 
 const updateJobPost = async ({
-  id,
+  _id,
   jobtitle,
   jobtype,
   joblocation,
@@ -186,7 +186,7 @@ const updateJobPost = async ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id,
+        _id,
         jobtitle,
         jobtype,
         joblocation,
@@ -209,12 +209,12 @@ const updateJobPost = async ({
 //enable feature
 // client_requests.js
 
-export const updateEnableStatus = async (id, enablestatus) => {
+export const updateEnableStatus = async (_id, enablestatus) => {
 
   
   try {
-    console.log(enablestatus,id)
-    const response = await fetch(`${apiUrl}?id=${id}`, {
+    
+    const response = await fetch(`${apiUrl}?_id=${_id}`, {
       method: 'PATCH', // or 'PUT' depending on your server's API
       headers: {
         'Content-Type': 'application/json',
@@ -241,9 +241,9 @@ export const updateEnableStatus = async (id, enablestatus) => {
 
 //retore application and job posts
 
-export const updateRestore = async (id) => {
+export const updateRestore = async (_id) => {
   try {
-    const response = await fetch(`/api/Archived?id=${id}`, {
+    const response = await fetch(`/api/Archived?_id=${_id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

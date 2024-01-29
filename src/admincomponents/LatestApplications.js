@@ -58,7 +58,7 @@ const RecievedApplications = () => {
   };
 
   return (
-    <div className="relative col-span-1 m-auto h-[50vh] w-full overflow-scroll rounded-lg border shadow bg-white p-4 lg:h-[70vh]">
+    <div className="relative col-span-1  h-[50vh] w-full overflow-scroll rounded-lg border shadow bg-white p-4 lg:h-[60vh]">
       <h1>Recent Applications</h1>
       <ul>
         {applications != null ? (

@@ -1,4 +1,5 @@
-import { verifyOtp } from "prisma/otp";
+import { verifyOtp } from "mongodb/otp";
+
 
 // pages/api/verify-otp.js
 export default async function handler(req, res) {

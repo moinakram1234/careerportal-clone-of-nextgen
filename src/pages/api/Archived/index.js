@@ -1,12 +1,13 @@
-import { deletePost, updateJobPostAndAppStatus } from "prisma/archieved";
+import { deletePost, updateJobPostAndAppStatus } from "mongodb/archieved";
+
 
 export default async function handler(req, res) {
   // Check if the request is a PATCH request
   if (req.method.toLowerCase() === "patch") {
-    const { id } = req.query;
+    const { _id } = req.query;
     try {
-      console.log(id);
-      const updatedJobPost = await updateJobPostAndAppStatus(id);
+     
+      const updatedJobPost = await updateJobPostAndAppStatus(_id);
 
       res.status(200).json(updatedJobPost);
     } catch (error) {
@@ -14,8 +15,8 @@ export default async function handler(req, res) {
       res.status(500).json({ error: "Internal Server Error" });
     }
   } else if (req.method.toLowerCase() === "delete") {
-    const { id } = req.query;
-    await deletePost(id);
+    const { _id } = req.query;
+    await deletePost(_id);
     return res.status(200).json({ message: "Job post deleted successfully" });
   } else {
     res.status(405).json({ error: "Method Not Allowed" });

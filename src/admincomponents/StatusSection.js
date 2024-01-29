@@ -19,7 +19,7 @@ const DisplayStatus = ({ name, totalApplication, icon: IconComponent, animatePul
         {!animatePulse ? (
           <p className="my-1 flex min-w-[55px] items-center justify-center rounded-lg  font-semibold">
            <span>
-  <IconComponent size={30} />
+  <IconComponent size={30} color="#FFC83D" />
 </span>
           </p>
         ) : (

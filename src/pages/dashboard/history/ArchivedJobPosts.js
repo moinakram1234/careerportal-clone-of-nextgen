@@ -8,6 +8,23 @@ import UpdatePost from "@/admincomponents/updatepost";
 import Modal from "@/admincomponents/modal";
 import "react-quill/dist/quill.bubble.css";
 import {
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  TableCaption,
+} from "@chakra-ui/table";
+import {
+  Box,
+  Button,
+  Input,
+  ChakraProvider,
+  extendTheme,
+} from "@chakra-ui/react";
+import {
   deleteArchiveJobPost,
   fetchJobPosts,
   updateRestore,
@@ -16,7 +33,7 @@ import Loader from "@/components/loader";
 import { useRouter } from "next/router";
 import { isTokenExpired } from "../../tokenUtils";
 import parseJwt from "../parsetoken";
-import SpinnerIcon from "@/components/SpinnerIcon";
+
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const PostJobs = () => {
@@ -28,7 +45,14 @@ const PostJobs = () => {
   const [isValidToken, setIsValidToken] = useState(false);
   const [isspinner, setIsspinner] = useState(false);
   const router = useRouter();
-
+  const [searchInput, setSearchInput] = useState("");
+  const headers = [
+    "Job Title",
+    "Job Type",
+    "Job Location",
+    "Description",
+    "Created At",
+  ];
   const redirectToHome = () => router.push("/");
 
   const checkTokenExpiration = async () => {
@@ -76,7 +100,7 @@ const PostJobs = () => {
       setExpandedDescriptions(Array(data.length).fill(false));
       const initialEnableStates = {};
       data.forEach((jobPost) => {
-        initialEnableStates[jobPost.id] = jobPost.enable;
+        initialEnableStates[jobPost._id] = jobPost.enable;
       });
       setEnableStates(initialEnableStates);
     };
@@ -93,14 +117,14 @@ const PostJobs = () => {
     setIsModalOpen(false);
   };
   //delete job post
-  const handleDelete = async (id) => {
+  const handleDelete = async (_id) => {
     try {setIsspinner(true);
-      const deleted = await deleteArchiveJobPost(id);
+      const deleted = await deleteArchiveJobPost(_id);
       
       if (deleted) {
         setIsspinner(false)
         setJobPosts((prevJobPosts) =>
-          prevJobPosts.filter((jobPost) => jobPost.id !== id)
+          prevJobPosts.filter((jobPost) => jobPost._id !== _id)
         );
         toast("Job post deleted successfully");
       }
@@ -112,10 +136,11 @@ const PostJobs = () => {
   };
 
   // Function to handle toggling the `enable` state
-  const handleRestore = async (id) => {
+  const handleRestore = async (_id) => {
     try {
+     
       setIsspinner(true);
-      await updateRestore(id);
+      await updateRestore(_id);
       setIsspinner(false);
       const data = await fetchJobPosts();
       const filteredJobPosts = data.filter(
@@ -128,129 +153,128 @@ const PostJobs = () => {
     }
   };
 
-  const handleReadMore = (index) => {
-    // Toggle the expanded state for the clicked job post
-    const updatedExpandedDescriptions = [...expandedDescriptions];
-    updatedExpandedDescriptions[index] = !updatedExpandedDescriptions[index];
-    setExpandedDescriptions(updatedExpandedDescriptions);
+  const formatCreatedAt = (createdAt) => {
+    const date = new Date(createdAt);
+    const formattedDate = date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return formattedDate;
   };
+
+  const theme = extendTheme({
+    styles: {
+      global: {
+        body: {
+          bg: "white",
+        },
+      },
+    },
+  });
   return (
     <div>
-      {" "}
-      {isValidToken == true ? (
-        <BaseLayout>
-          <div className="h-5/6 mt-8 mx-auto w-full p-6 bg-white rounded-md shadow-md overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-6 font-sans text-gray-500   text-center">
-              Job Posts
-            </h2>
-            <div className="flex justify-center">
-              {isspinner && <SpinnerIcon />}
-            </div>
-            {/* Display job posts */}
-            {jobPosts != null ? (
-              jobPosts.map((jobPost, index) => (
-                <div key={index}>
-                  <div
-                    style={{ backgroundColor: "#005997" }}
-                    className="flex justify-between rounded-t-lg"
-                  >
-                    <h3 className="text-xl text-white p-2 font-bold">
-                      {jobPost.jobtitle}
-                    </h3>
-                    {/* Enable Toggle Button */}
-                    <div className="flex items-center space-x-2">
-                      <label
-                        htmlFor={`enableSwitch-${jobPost.id}`}
-                        className="cursor-pointer pr-6"
-                      >
-                        <button
-                          className="hover:text-green-400 font-sans text-white"
-                          onClick={() => handleRestore(jobPost.id)}
-                        >
-                          Restore
-                        </button>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="border pr-8   flex flex-col items-end md:flex-row md:justify-between">
-                    <div>
-                      <ReactQuill
-                        readOnly={true}
-                        theme={"bubble"}
-                        value={
-                          expandedDescriptions[index]
-                            ? jobPost.description || ""
-                            : jobPost.description
-                            ? `${jobPost.description.substring(0, 300)}...`
-                            : ""
-                        }
-                      />
-                      {!expandedDescriptions[index] && (
-                        <button
-                          className="text-blue-500 hover:underline ml-5 text-sm"
-                          onClick={() => handleReadMore(index)}
-                        >
-                          Read More
-                        </button>
-                      )}
-                      {expandedDescriptions[index] && (
-                        <button
-                          className="text-blue-500 hover:underline ml-5 text-sm"
-                          onClick={() => handleReadMore(index)}
-                        >
-                          Read Less
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex  text-center mt-4 md:mt-0">
-                      <div
-                        className="mr-4 rounded-2xl text-gray-800 w-28 h-9 pt-2"
-                        style={{ backgroundColor: "#F8FAFC" }}
-                      >
-                        {jobPost.jobtype}
-                      </div>
-                      <div
-                        className="mr-4 rounded-2xl text-gray-800 bg-gray-300 w-28 h-9 pt-2"
-                        style={{ backgroundColor: "#F8FAFC" }}
-                      >
-                        {jobPost.joblocation}
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(jobPost)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(jobPost.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <Loader />
-            )}
-
-            {isModalOpen && (
-              <Modal onClose={handleCloseModal}>
-                <UpdatePost
-                  jobPost={selectedJobPost}
-                  onClose={handleCloseModal}
+    {isValidToken == true ? (
+      <BaseLayout>
+        <div className="mt-5">
+          <ChakraProvider theme={theme}>
+            <Box p={8} >
+              <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
+                <Input
+                  placeholder="Search Job Title..."
+                  mb={4}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                 />
-              </Modal>
-            )}
-          </div>
-        </BaseLayout>
-      ) : (
-        <p>session expired</p>
-      )}
-    </div>
+              </div>
+              <TableContainer>
+                <Table variant="simple" >
+                  <Thead
+                    className="bg-[#FFC83D]  border"
+                    style={{ borderRadius: "20px" }}
+                  >
+                    <Tr>
+                      {headers.map((header, index) => (
+                        <Th key={index} >{header}</Th>
+                      ))}
+                      <Th>Actions</Th>
+                     
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {jobPosts != null ? (
+                      jobPosts
+                        .filter(
+                          (jobPost) =>
+                            jobPost.jobTitle.toLowerCase().includes(
+                              searchInput.toLowerCase()
+                            ) )
+                        .map((jobPost, index) => (
+                          <Tr key={index} className="border">
+                            <Td>{jobPost.jobTitle}</Td>
+                            <Td>{jobPost.jobType}</Td>
+                            <Td>{jobPost.jobLocation}</Td>
+                            <Td>
+                              {" "}
+                              <div className="flex ">
+                                <ReactQuill
+                                  className=""
+                                  readOnly={true}
+                                  theme={"bubble"}
+                                  value={
+                                    expandedDescriptions[index]
+                                      ? jobPost.description || ""
+                                      : jobPost.description
+                                      ? `${jobPost.description.substring(
+                                          0,
+                                          30
+                                        )}....`
+                                      : ""
+                                  }
+                                />
+                              </div>
+                            </Td>
+
+                            <Td> {formatCreatedAt(jobPost.createdAt)}</Td>
+                            <Td>
+                              {/* Add your action buttons here */}
+
+                              <div className="flex gap-4">
+                            
+                                <Button
+                                  onClick={() => handleDelete(jobPost._id)}
+                                  colorScheme="red"
+                                  size="sm"
+                                >
+                                  Delete
+                                </Button>
+                                <Button
+                                  onClick={() => handleRestore(jobPost._id)}
+                                  size="sm"  
+                                >
+                                  Restore
+
+                    
+                                </Button>
+                              </div>
+                            </Td>
+                          </Tr>
+                        ))
+                    ) : (
+                      <Loader />
+                    )}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </ChakraProvider>
+       
+        </div>
+      </BaseLayout>
+    ) : (
+      <p>session expired</p>
+    )}
+  </div>
   );
 };
 

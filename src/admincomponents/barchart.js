@@ -21,42 +21,50 @@ ChartJS.register(
 
 const BarChart = () => {
   const [chartData, setChartData] = useState({
-    datasets: [],
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    datasets: [
+      {
+        label: "applications",
+        data: [851, 115, 285, 554, 251, 218, 219],
+        borderColor: "#005997",
+        backgroundColor: "#FFCF56",
+        barThickness: 40, // Adjust the bar thickness as needed
+        borderRadius: 3,   // Add border width to the bars
+             // Adjust the height as needed      
+      },
+    ],
   });
-  const [chartOptions, setChartOptions] = useState({});
 
-  useEffect(() => {
-    setChartData({
-      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      datasets: [
-        {
-          label: "applications ",
-          data: [851, 115, 285, 554, 251, 218, 219],
-          borderColor: "#F1F5F9",
-          backgroundColor: "#005997",
-        },
-      ],
-    });
-    setChartOptions({
-      plugins: {
-        legend: {
-          position: "top",
-        },
-        title: {
-          display: true,
-          text: "Daily Applications",
+  const [chartOptions, setChartOptions] = useState({
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Daily Applications",
+      },
+    },
+    maintainAspectRatio: false,
+    responsive: true,
+    scales: {
+      x: {
+        grid: {
+          display: false,
         },
       },
-      maintainAspectRatio: false,
-      responsive: true,
-    });
-  }, []);
+      y: {
+        grid: {
+          color: "rgba(0,0,0,0.1)",
+        },
+      },
+    },
+  });
+
   return (
-    <>
-      <div className="bh-white m-auto h-[50vh] w-full shadow border p-4 md:col-span-2 lg:h-[70vh]">
-        <Bar data={chartData} options={chartOptions} />
-      </div>
-    </>
+    <div className="bh-white h-[30vh] w-full border bg-card text-card-foreground shadow p-4 md:col-span-2 lg:h-[60vh]">
+      <Bar data={chartData} options={chartOptions}  />
+    </div>
   );
 };
 

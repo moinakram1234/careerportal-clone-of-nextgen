@@ -1,16 +1,17 @@
-// components/GetNameFromEmail.js
-
 const GetNameFromEmail = ({ email }) => {
-    const extractName = (email) => {
-      // Extract name from email by splitting at '@'
-      const [name] = email.split('@');
-      return name;
-    };
-  
-    const name = extractName(email);
-  
-    return <span>{name}</span>;
+  const extractName = (email) => {
+    // Extract name from email by splitting at '@'
+    const name = email.split('@')[0];
+
+    // Remove numbers from the name
+    const cleanedName = name.replace(/\d+/g, ''); // This will remove all numbers
+
+    return cleanedName;
   };
-  
-  export default GetNameFromEmail;
-  
+
+  const name = extractName(email);
+
+  return <span>{name}</span>;
+};
+
+export default GetNameFromEmail;

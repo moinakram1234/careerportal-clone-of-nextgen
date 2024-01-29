@@ -95,9 +95,9 @@ const Login = () => {
       </div>
 
       <div className="lg:w-[60%] w-[100%] pt-5">
-        <div className="flex gap-5">
-          <img className="w-24 h-20" src="logo.png" alt="logo" />
-          <h3 className="text-3xl mt-12 text-gray-500">Haidri Beverages</h3>
+        <div className="flex gap-5 mt-5 justify-center">
+          <img className="w-20 h-20" src="logo.png" alt="logo" />
+          <h3 className="text-3xl mt-5 text-gray-500">Haidri Beverages</h3>
         </div>
         <main className="flex pt-10 justify-center">
           <div className=" border-2 border-gray-200 rounded w-96 p-4">
@@ -176,14 +176,8 @@ const Login = () => {
               </div>
               <br></br>
               <div className="w-full h-[20px] border-b-2  text-center pb-5">
-                <span className="text-[17px] bg-white text-gray-500">
-                  Log in with <span className="text-black text-xl">github</span>{" "}
-                  and <span className="text-red-500 text-xl">G</span>
-                  <span className="text-yellow-500 text-xl">o</span>
-                  <span className="text-blue-500 text-xl">o</span>
-                  <span className="text-green-500 text-xl">g</span>
-                  <span className="text-yellow-500 text-xl">l</span>
-                  <span className="text-red-500 text-xl">e</span>.
+                <span className="text-[17px] bg-white  text-gray-500">
+                 OR
                 </span>
               </div>
               <br></br>

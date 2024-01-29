@@ -6,8 +6,8 @@
         //   return res.status(201).json(new_post);
         // }
         import jwt from "jsonwebtoken";
-        import { getUserByUsernameAndPassword } from "prisma/user";
         import crypto from 'crypto';
+import { getUserByUsernameAndPassword } from "mongodb/user";
 
         
         // Generate secret key
@@ -23,16 +23,15 @@
                 
                 // Validate username and password (add your validation logic here)
                 
-                console.log(email, userPassword);
         
                 const user = await getUserByUsernameAndPassword(email, userPassword);
               
-                if (user && user.id) {
-                  console.log(user)
+                if (user && user._id) {
+                
                   const expiresIn = 3600*12; // 1 hour in seconds
                   // User authentication successful, create a JWT token
                   const token = jwt.sign(
-                    { userId: user.id, email: user.email, isadmin: user.isAdmin },
+                    { userId: user._id, email: user.email, isadmin: user.isAdmin },
                     generateSecretKey(),
                     { expiresIn }
                   );

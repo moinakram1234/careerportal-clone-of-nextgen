@@ -4,7 +4,7 @@ const BaseLayout = ({ children }) => {
   return (
     <div className="layout">
       <Sidebar />
-      <main className="layout__main-content">{children}</main>;
+      <main className="layout__main-content">{children}</main>
     </div>
   );
 };

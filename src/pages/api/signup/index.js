@@ -1,5 +1,6 @@
+import { createUser } from "mongodb/user";
+
 // pages/api/signup.js
-import { createUser } from "prisma/user"; // Import your user creation function
 export default async function handler(req, res) {
   try {
     if (req.method.toLowerCase() === 'post') {

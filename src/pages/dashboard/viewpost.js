@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import BaseLayout from "../../admincomponents/BaseLayout";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UpdatePost from "../../admincomponents/updatepost";
@@ -14,12 +13,27 @@ import {
   fetchJobPosts,
   updateEnableStatus,
 } from "@/server_requests/client_requests";
+import {
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  TableCaption,
+} from "@chakra-ui/table";
+import {
+  Box,
+  Button,
+  Input,
+  ChakraProvider,
+  extendTheme,
+} from "@chakra-ui/react";
 import Loader from "@/components/loader";
 import { useRouter } from "next/router";
 import { isTokenExpired } from "../tokenUtils";
 import parseJwt from "./parsetoken";
-import SpinnerIcon from "@/components/SpinnerIcon";
-import { FaLocationCrosshairs } from "react-icons/fa6";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const PostJobs = () => {
@@ -29,9 +43,15 @@ const PostJobs = () => {
   const [expandedDescriptions, setExpandedDescriptions] = useState([]);
   const [enableStates, setEnableStates] = useState({});
   const [isValidToken, setIsValidToken] = useState(false);
-  const [isdeleting, setIsdeleting] = useState(false);
   const router = useRouter();
-
+  const [searchInput, setSearchInput] = useState("");
+  const headers = [
+    "Job Title",
+    "Job Type",
+    "Job Location",
+    "Description",
+    "Created At",
+  ];
   const redirectToHome = () => router.push("/");
 
   const checkTokenExpiration = async () => {
@@ -79,7 +99,7 @@ const PostJobs = () => {
       setExpandedDescriptions(Array(data.length).fill(false));
       const initialEnableStates = {};
       data.forEach((jobPost) => {
-        initialEnableStates[jobPost.id] = jobPost.enable;
+        initialEnableStates[jobPost._id] = jobPost.enable;
       });
       setEnableStates(initialEnableStates);
     };
@@ -96,15 +116,15 @@ const PostJobs = () => {
     setIsModalOpen(false);
   };
   //delete job post
-  const handleDelete = async (id) => {
+  const handleDelete = async (_id) => {
     try {
       setIsdeleting(true);
-      const deleted = await deleteJobPost(id);
+      const deleted = await deleteJobPost(_id);
 
       if (deleted) {
         setIsdeleting(false);
         setJobPosts((prevJobPosts) =>
-          prevJobPosts.filter((jobPost) => jobPost.id !== id)
+          prevJobPosts.filter((jobPost) => jobPost._id !== _id)
         );
         toast("Job post deleted successfully");
       }
@@ -116,15 +136,15 @@ const PostJobs = () => {
   };
 
   // Function to handle toggling the `enable` state
-  const handleToggleEnable = async (id) => {
+  const handleToggleEnable = async (_id) => {
     try {
-      const updatedEnableState = !enableStates[id];
+      const updatedEnableState = !enableStates[_id];
       setEnableStates((prevStates) => ({
         ...prevStates,
-        [id]: updatedEnableState,
+        [_id]: updatedEnableState,
       }));
-
-      const status = await updateEnableStatus(id, updatedEnableState);
+      alert(_id);
+      const status = await updateEnableStatus(_id, updatedEnableState);
       toast(status);
     } catch (error) {
       console.error("Error updating enable status:", error);
@@ -138,126 +158,150 @@ const PostJobs = () => {
     updatedExpandedDescriptions[index] = !updatedExpandedDescriptions[index];
     setExpandedDescriptions(updatedExpandedDescriptions);
   };
+  const theme = extendTheme({
+    styles: {
+      global: {
+        body: {
+          bg: "white",
+        },
+      },
+    },
+  });
+  const formatCreatedAt = (createdAt) => {
+    const date = new Date(createdAt);
+    const formattedDate = date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return formattedDate;
+  };
+
+
   return (
     <div>
-      {" "}
       {isValidToken == true ? (
+        <div>
         <BaseLayout>
-          <div className="h-5/6 mt-8 mx-auto w-full p-6 bg-white rounded-md shadow-md overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-6  text-gray-500  text-center">
-              Job Posts
-            </h2>
-            <div className="flex justify-center">
-              {isdeleting && <SpinnerIcon />}
-            </div>
-            {/* Display job posts */}
-            {jobPosts != null ? (
-              jobPosts.map((jobPost, index) => (
-                <div key={index}>
-                  <div
-                    style={{ backgroundColor: "#005997" }}
-                    className="flex justify-between rounded-t-lg"
-                  >
-                    <h3 className="text-xl text-white p-2 font-bold">
-                      {jobPost.jobtitle}
-                    </h3>
-                    {/* Enable Toggle Button */}
-                    <div className="flex items-center space-x-2">
-                      <label
-                        htmlFor={`enableSwitch-${jobPost.id}`}
-                        className="cursor-pointer pr-6"
-                      >
-                        <button onClick={() => handleToggleEnable(jobPost.id)}>
-                          <div
-                            className={`w-10 h-5 rounded-full  transition ${
-                              enableStates[jobPost.id]
-                                ? "bg-[green]"
-                                : "bg-gray-600 blur-5 brightness-50"
-                            }`}
-                          >
-                            <div
-                              className={`bg-white w-5 h-5 rounded-full shadow-md transform ${
-                                enableStates[jobPost.id] ? "translate-x-6" : ""
-                              } transition`}
-                            ></div>
-                          </div>
-                        </button>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="border pr-8 text-gray-500  flex flex-col items-end md:flex-row md:justify-between">
-                    <div>
-                      <ReactQuill
-                        className="text-gray-500"
-                        readOnly={true}
-                        theme={"bubble"}
-                        value={
-                          expandedDescriptions[index]
-                            ? jobPost.description || ""
-                            : jobPost.description
-                            ? `${jobPost.description.substring(0, 300)}...`
-                            : ""
-                        }
-                      />
-                      <div className="text-end pr-4">
-                        {!expandedDescriptions[index] && (
-                          <button
-                            className="text-blue-500  hover:underline ml-5 text-sm"
-                            onClick={() => handleReadMore(index)}
-                          >
-                            Read More
-                          </button>
-                        )}
-                        {expandedDescriptions[index] && (
-                          <button
-                            className="text-blue-500 hover:underline ml-5 text-sm"
-                            onClick={() => handleReadMore(index)}
-                          >
-                            Read Less
-                          </button>
-                        )}
-                      </div>
-                      <div className="flex ml-10 pb-3">
-                        <div
-                          className="mr-4 text-gray-500  text-center rounded-2xl w-28 h-9 pt-2"
-                          style={{ backgroundColor: "#F8FAFC" }}
-                        >
-                          {jobPost.jobtype}
-                        </div>
-                        <div
-                          className="mr-4 flex gap-3 justify-center rounded-2xl text-gray-500 bg-gray-300  h-9 pt-2"
-                          style={{ backgroundColor: "#F8FAFC" }}
-                        >
-                          <FaLocationCrosshairs />
-                          {jobPost.joblocation}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex  pb-3 text-center mt-4 md:mt-0">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(jobPost)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(jobPost.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <br></br>
+          <div className="mt-5">
+            <ChakraProvider theme={theme}>
+              <Box p={8} >
+                <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
+                  <Input
+                    placeholder="Search..."
+                    mb={4}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                  />
                 </div>
-              ))
-            ) : (
-              <Loader />
-            )}
+                <TableContainer>
+                  <Table variant="simple" >
+                    <Thead
+                      className="bg-[#FFC83D]  border"
+                      style={{ borderRadius: "20px" }}
+                    >
+                      <Tr>
+                        {headers.map((header, index) => (
+                          <Th key={index} >{header}</Th>
+                        ))}
+                        <Th>Actions</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {jobPosts != null ? (
+                        jobPosts
+                          .filter(
+                            (jobPost) =>
+                              jobPost.jobTitle.toLowerCase().includes(
+                                searchInput.toLowerCase()
+                              ) ||
+                              jobPost.jobType
+                                .toLowerCase()
+                                .includes(searchInput.toLowerCase()) ||
+                              jobPost.jobLocation
+                                .toLowerCase()
+                                .includes(searchInput.toLowerCase()) ||
+                              jobPost.description
+                                .toLowerCase()
+                                .includes(searchInput.toLowerCase())
+                          )
+                          .map((jobPost, index) => (
+                            <Tr key={index} className="border">
+                              <Td>{jobPost.jobTitle}</Td>
+                              <Td>{jobPost.jobType}</Td>
+                              <Td>{jobPost.jobLocation}</Td>
+                              <Td>
+                                {" "}
+                                <div className="flex ">
+                                  <ReactQuill
+                                    className=""
+                                    readOnly={true}
+                                    theme={"bubble"}
+                                    value={
+                                      expandedDescriptions[index]
+                                        ? jobPost.description || ""
+                                        : jobPost.description
+                                        ? `${jobPost.description.substring(
+                                            0,
+                                            30
+                                          )}....`
+                                        : ""
+                                    }
+                                  />
+                                </div>
+                              </Td>
 
+                              <Td> {formatCreatedAt(jobPost.createdAt)}</Td>
+                              <Td>
+                                {/* Add your action buttons here */}
+
+                                <div className="flex gap-4">
+                                  <Button
+                                    onClick={() => handleEdit(jobPost)}
+                                    size="sm"
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleDelete(jobPost._id)}
+                                    colorScheme="red"
+                                    size="sm"
+                                  >
+                                    Delete
+                                  </Button>
+                                  <button
+                                    onClick={() =>
+                                      handleToggleEnable(jobPost._id)
+                                    }
+                                  >
+                                    <div
+                                      className={`w-10 h-5 rounded-full   ${
+                                        enableStates[jobPost._id]
+                                          ? "bg-[#FFC83D]"
+                                          : "bg-[red] blur-5 "
+                                      }`}
+                                    >
+                                      <div
+                                        className={`bg-white w-5 h-5 rounded-full shadow-md transform ${
+                                          enableStates[jobPost._id]
+                                            ? "translate-x-6"
+                                            : ""
+                                        } transition`}
+                                      ></div>
+                                    </div>
+                                  </button>
+                                </div>
+                              </Td>
+                            </Tr>
+                          ))
+                      ) : (
+                        <Loader />
+                      )}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </ChakraProvider>
             {isModalOpen && (
               <Modal onClose={handleCloseModal}>
                 <UpdatePost
@@ -265,11 +309,9 @@ const PostJobs = () => {
                   onClose={handleCloseModal}
                 />
               </Modal>
-            )}
+            )}{" "}
           </div>
-
-          <ToastContainer />
-        </BaseLayout>
+        </BaseLayout></div>
       ) : (
         <p>session expired</p>
       )}
