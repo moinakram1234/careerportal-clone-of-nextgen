@@ -1,22 +1,24 @@
-import BaseLayout from "@/components/Baselayout";
-import Loader from "@/components/loader";
-import { createJobapplication } from "@/server_requests/client_requests";
 import React, { useState } from "react";
 import infobg from "public/images/personalinfosvg.svg";
 import {
+  BaseLayout,
+  Loader,
+  createJobapplication,
   ChakraProvider,
   Radio,
   RadioGroup,
   Select,
   Stack,
-} from "@chakra-ui/react";
-import theme from "@chakra-ui/theme";
-import "react-toastify/dist/ReactToastify.css";
-import BottonSection from "@/components/bottomsection";
-import { useRouter } from "next/router";
-import {toast,ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import Image from "next/image";
+  theme,
+  useRouter,
+  toast,
+  ToastContainer,
+  Image,
+  BottomSection,
+  Range,
+} from '@/components/export_libraries/exportlibrary'
+import { extendTheme } from "@chakra-ui/react";
+
 const ApplicationForm = ({ onClose, postid }) => {
   const [istoggle, setToggle] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +26,9 @@ const ApplicationForm = ({ onClose, postid }) => {
   const [fileError, setFileError] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const router = useRouter();
+  const [experiencerange, setexperiencerange] = useState([0, 10]); // Initial range values
+  const [fileName, setFileName] = useState("");
+
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -33,18 +38,23 @@ const ApplicationForm = ({ onClose, postid }) => {
     address: "",
     experience: "",
     cv: "",
-    postid: router.query.postid || "",
+    experiencerange: [0, 10], // Initialize with default values
+    postid: "",
     countryorregion: "",
     city: "",
     stateorprovince: "",
     zipcode: "",
     majorSubject: "",
-    universityName:"",
+    universityName: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+  const handleRangeChange = (values) => {
+    setexperiencerange(values);
+    setFormData((prevData) => ({ ...prevData, experiencerange: values }));
   };
 
   const isValidPakistanPhoneNumber = (phoneNumber) => {
@@ -55,12 +65,14 @@ const ApplicationForm = ({ onClose, postid }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setPdffile(file);
+    setFileName(event.target.files[0].name);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
- 
+    formData.experiencerange = experiencerange;
+    formData.postid = router.query.postid;
     try {
       if (
         !isValidPakistanPhoneNumber(formData.phone) &&
@@ -71,26 +83,28 @@ const ApplicationForm = ({ onClose, postid }) => {
       } else {
         setFileError("");
       }
-     const response = await createJobapplication(formData, pdffile, formData.postid);
+
+      const response = await createJobapplication(formData, pdffile);
+      alert(formData.postid);
       toast(response.message);
-      setFormData({
-        fullName: "",
-        phone: "",
-        email: "",
-        qualification: "",
-        selectedDepartment: "",
-        cv: "",
-        address: "",
-        postid: postid,
-        countryorregion: "",
-        city: "",
-        stateorprovince: "",
-        zipcode: "",
-        majorSubject: "",
-        universityName:"",
-      });
-      setPdffile(null);
-      e.target.reset();
+      // setFormData({
+      //   fullName: "",
+      //   phone: "",
+      //   email: "",
+      //   qualification: "",
+      //   selectedDepartment: "",
+      //   cv: "",
+      //   address: "",
+      //   postid: postid,
+      //   countryorregion: "",
+      //   city: "",
+      //   stateorprovince: "",
+      //   zipcode: "",
+      //   majorSubject: "",
+      //   universityName: "",
+      // });
+      // setPdffile(null);
+      // setexperiencerange([0, 10]);
     } catch (error) {
       console.error("Error submitting application:", error);
       toast.error("Error submitting application. Please try again.");
@@ -101,8 +115,26 @@ const ApplicationForm = ({ onClose, postid }) => {
 
   const yr_experience = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
   const Departmantdata = ["IT", "HR", "Marketing", "Sales", "Finance"];
-  const majorsubjectdata = ["Computer Science", "Software Engineering", "Information Technology", "Business Administration", "Marketing", "Finance", "Accounting", "Human Resource", "Other"];
-
+  const majorsubjectdata = [
+    "Computer Science",
+    "Software Engineering",
+    "Information Technology",
+    "Business Administration",
+    "Marketing",
+    "Finance",
+    "Accounting",
+    "Human Resource",
+    "Other",
+  ];
+  const theme = extendTheme({
+    styles: {
+      global: {
+        body: {
+          bg: "white",
+        },
+      },
+    },
+  });
   return (
     <ChakraProvider theme={theme}>
       <BaseLayout>
@@ -194,9 +226,7 @@ const ApplicationForm = ({ onClose, postid }) => {
                           />
                         </div>
                         <div class="md:col-span-5">
-                          <label for="major subject">
-                           Major Subject
-                          </label>
+                          <label for="major subject">Major Subject</label>
                           <Select
                             placeholder="Select Major Subject"
                             className="w-full"
@@ -212,17 +242,18 @@ const ApplicationForm = ({ onClose, postid }) => {
                           </Select>
                         </div>
                         <div class="md:col-span-5">
-                        {formData.majorSubject === "Other" && (
-                              <input
-                                type="text"
-                                name="majorSubject"
-                                id="majorSubject"
-                                class="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                value={formData.majorSubject}
-                                placeholder="majorSubject"
-                                onChange={handleChange}
-                              />
-                            )}</div>
+                          {formData.majorSubject === "Other" && (
+                            <input
+                              type="text"
+                              name="majorSubject"
+                              id="majorSubject"
+                              class="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                              value={formData.majorSubject}
+                              placeholder="majorSubject"
+                              onChange={handleChange}
+                            />
+                          )}
+                        </div>
                         <div class="md:col-span-3">
                           <label for="address">Address / Street</label>
                           <input
@@ -377,9 +408,11 @@ const ApplicationForm = ({ onClose, postid }) => {
                         </div>
                         <div class="md:col-span-5 mt-2 mb-2">
                           <RadioGroup
-                             onChange={(value) => {
+                            onChange={(value) => {
                               setSelectedOption(value);
-                              handleChange({ target: { name: 'experience', value } });
+                              handleChange({
+                                target: { name: "experience", value },
+                              });
                             }}
                             value={formData.experience}
                           >
@@ -392,22 +425,58 @@ const ApplicationForm = ({ onClose, postid }) => {
 
                         {selectedOption === "experienced" && (
                           <div class="md:col-span-5">
-                            <label for="experience_years">
-                              Please select the number of years of experience.
-                            </label>
-                            <Select
-                              placeholder="Select experience"
-                              className="w-full"
-                              name="experience"
-                              onChange={handleChange}
-                              value={formData.experience}
-                            >
-                              {yr_experience.map((option) => (
-                                <option value={option} key={option}>
-                                  {option}
-                                </option>
-                              ))}
-                            </Select>
+                            <div>
+                              <label
+                                htmlFor="Experience range"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                Experience range (in years):
+                              </label>
+                              <Range
+                                step={1}
+                                min={0}
+                                max={10}
+                                values={experiencerange}
+                                onChange={setexperiencerange}
+                                renderTrack={({ props, children }) => (
+                                  <div
+                                    {...props}
+                                    style={{
+                                      ...props.style,
+                                      height: "6px",
+                                      width: "20%",
+                                      marginTop: "30px",
+                                      backgroundColor: "#ccc",
+                                    }}
+                                  >
+                                    {children}
+                                  </div>
+                                )}
+                                renderThumb={({ props, index, isDragged }) => {
+                                  return (
+                                    <div
+                                      {...props}
+                                      style={{
+                                        ...props.style,
+                                        height: "20px",
+                                        width: "20px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#FFC83D",
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          position: "absolute",
+                                          top: "-20px",
+                                        }}
+                                      >
+                                        {experiencerange[index]}
+                                      </span>
+                                    </div>
+                                  );
+                                }}
+                              />
+                            </div>
                           </div>
                         )}
 
@@ -417,11 +486,11 @@ const ApplicationForm = ({ onClose, postid }) => {
                             type="file"
                             name="cv"
                             id="resume"
-                            value={formData.cv}
                             onChange={handleFileChange}
-                            className=" border mt-1 p-5 rounded w-full bg-gray-50"
-                            placeholder=""
+                            className="border mt-1 p-5 rounded w-full bg-gray-50"
+                            placeholder="file"
                           />
+                          {fileName && <p>Selected file: {fileName}</p>}
                         </div>
 
                         <div class="md:col-span-5">
@@ -442,8 +511,8 @@ const ApplicationForm = ({ onClose, postid }) => {
             </div>
           </div>
         )}
-       <ToastContainer />
-        <BottonSection />
+        <ToastContainer />
+        <BottomSection />
       </BaseLayout>
     </ChakraProvider>
   );

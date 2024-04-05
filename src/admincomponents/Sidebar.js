@@ -60,7 +60,7 @@ const Sidebar = () => {
                         <Icon/>
                       </span>
                       <span
-                        className={`flex gap-24 sidebar__name ${
+                        className={` flex gap-24 sidebar__name ${
                         "sidebar__name--active " 
                         }`}
                       >
@@ -81,7 +81,7 @@ const Sidebar = () => {
                               href={subItem.href}
                             >
                               <span
-                                className={`sidebar__name ${
+                                className={` text-xs ${
                                   router.pathname === subItem.href
                                     ? "sidebar__name--active "
                                     : ""

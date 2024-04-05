@@ -1,4 +1,5 @@
-import Dashboard from "./dashboard";
+import Dashboard from "@/admincomponents/admindashbord/Admindashboard";
+
 
 const Home = () => {
   // const totalUsers = 100; // Replace with the actual total number of users

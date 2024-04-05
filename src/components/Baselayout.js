@@ -10,7 +10,7 @@ const BaseLayout = ({ children }) => {
 
   return (
     <div
-      className={`flex overflow-x-hidden min-h-screen ${
+      className={`flex overflow-y-hidden overflow-x-hidden min-h-screen ${
         darkMode ? "bg-[#292929]" : "bg-white"
       }`}
     >

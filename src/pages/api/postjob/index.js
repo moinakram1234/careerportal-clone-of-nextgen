@@ -1,22 +1,42 @@
-import { createJobPost, deletePost, getAllPosts, getPostById, updateEnableStatus, updatePost } from "mongodb/jobpost";
+import {
+  createJobPost,
+  deletePost,
+  getAllPosts,
+  getPostById,
+  updateEnableStatus,
+  updatePost,
+} from "mongodb/jobpost";
 
 export default async function handler(req, res) {
   try {
     switch (req.method.toLowerCase()) {
       case "post": {
-        const { jobtitle, jobtype, joblocation, description } = req.body;
+        const {
+          jobtitle,
+          jobtype,
+          joblocation,
+          description,
+          experienceLevel,
+          submissionDeadline,
+          department,
+          values,
+        } = req.body;
      
         const new_post = await createJobPost(
           jobtitle,
           jobtype,
           joblocation,
-          description
+          description,
+          experienceLevel,
+          submissionDeadline,
+          department,
+          values
         );
         return res.status(201).json(new_post);
       }
       case "get": {
         const { _id } = req.query;
-        if (_id!==undefined) {
+        if (_id !== undefined) {
           // If the request includes an _ID, fetch details for the specific job post
           const jobpostDetails = await getPostById(_id);
 
@@ -33,14 +53,35 @@ export default async function handler(req, res) {
       }
       case "delete": {
         const { _id } = req.query;
+        console.log(_id);
         await deletePost(_id);
         return res
           .status(200)
           .json({ message: "Job post deleted successfully" });
       }
       case "put": {
-        const { _id, jobtitle, jobtype, joblocation, description } = req.body;
-        await updatePost(_id, jobtitle, jobtype, joblocation, description);
+        const {
+          _id,
+          jobtitle,
+          jobtype,
+          joblocation,
+          description,
+          department,
+          submissionDeadline,
+          experienceLevel,
+          values,
+        } = req.body;
+        await updatePost(
+          _id,
+          jobtitle,
+          jobtype,
+          joblocation,
+          description,
+          department,
+          submissionDeadline,
+          experienceLevel,
+          values,
+        );
         return res
           .status(200)
           .json({ message: "Job post updated successfully" });
@@ -48,11 +89,13 @@ export default async function handler(req, res) {
       case "patch": {
         const { _id } = req.query;
         const { enable } = req.body;
-        
+
         // Assuming you have a function named updateEnableStatus in your prisma/jobpost
         await updateEnableStatus(_id, enable);
 
-        return res.status(200).json({ message: "Enable status updated successfully" });
+        return res
+          .status(200)
+          .json({ message: "Enable status updated successfully" });
       }
       default:
         return res.status(405).end(); // Method Not Allowed

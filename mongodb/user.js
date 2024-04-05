@@ -88,3 +88,12 @@ export async function changePassword(email, newPassword) {
     throw error; // Handle or log the error appropriately in your application
   }
 }
+export const getAllUsers = async () => {
+  try {
+    const users = await User.find({});
+    return users;
+  } catch (error) {
+    console.error('Error in getAllUsers:', error);
+    throw error;
+  }
+};

@@ -7,6 +7,13 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { updateJobPost } from "@/server_requests/client_requests";
 import "react-quill/dist/quill.snow.css";
 import SpinnerIcon from "./spinnerIcon";
+import Select from "react-select";
+import DatePicker from "react-datepicker";
+import { Range } from "react-range";
+import "react-datepicker/dist/react-datepicker.css";
+import { optionsDepartment, optionsexperince } from "@/Data/staticData";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const UpdatePost = ({ jobPost, onClose }) => {
   const [jobtitle, setJobtitle] = useState(jobPost.jobTitle);
   const [jobtype, setJobtype] = useState(jobPost.jobType);
@@ -15,6 +22,11 @@ const UpdatePost = ({ jobPost, onClose }) => {
   const [_id, setId] = useState(jobPost._id);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [department, setDepartment] = useState(jobPost.department);
+  const [submissionDeadline, setSubmissionDeadline] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState(jobPost.experienceLevel);
+  const [values, setValues] = useState([0, 10]); // Initial range values
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -25,9 +37,15 @@ const UpdatePost = ({ jobPost, onClose }) => {
         jobtype,
         joblocation,
         description,
+        department,
+        submissionDeadline,
+        experienceLevel,
+        values,
+
       });
      if (updatedJobPost)
      {
+       toast.success("Job post updated successfully!");
       setLoading(true);
      }
       console.log("Job post updated successfully:", updatedJobPost);
@@ -66,29 +84,126 @@ const UpdatePost = ({ jobPost, onClose }) => {
           <>
             {renderStepSeparators()}
             <div className="mb-4 flex gap-5">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  id="jobtitle"
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Enter job title"
-                  value={jobtitle}
-                  onChange={(e) => setJobtitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex-1">
-                <input
-                  type="text"
-                  id="jobtype"
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Enter job Type"
-                  value={jobtype}
-                  onChange={(e) => setJobtype(e.target.value)}
-                  required
-                />
-              </div>
+              <input
+                type="text"
+                id="jobtitle"
+                className="w-[42.3%] p-2 border rounded-md"
+                placeholder="Enter job title"
+                value={jobtitle}
+                onChange={(e) => setJobtitle(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                id="jobtype"
+                className="w-[40%] p-2 border rounded-md"
+                placeholder="Enter job Type"
+                value={jobtype}
+                onChange={(e) => setJobtype(e.target.value)}
+                required
+              />
             </div>
+            <div className="flex flex-row w-full">
+              <div className="flex flex-col w-[25.2%]">
+                <label
+                  htmlFor="experienceLevel"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Experience Level:
+                </label>
+                <Select
+                  id="experienceLevel"
+                  defaultValue={experienceLevel}
+                  onChange={setExperienceLevel}
+                  options={optionsexperince}
+                />
+              </div>
+              <div className="mb-10" />
+              <div className="flex flex-col w-[20%] ml-5">
+                <label
+                  htmlFor="submissionDeadline"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Submission Deadline:
+                </label>
+                <DatePicker
+                  id="submissionDeadline"
+                  selected={submissionDeadline}
+                  onChange={(date) => setSubmissionDeadline(date)}
+                  className="w-[100%] p-2 border rounded-md"
+                  placeholderText="Submission Deadline"
+                  required
+                />
+              </div>
+              <div className="flex flex-col w-[34.2%] ml-5">
+                <label
+                  htmlFor="department"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Department:
+                </label>
+                <Select
+                  id="department"
+                  defaultValue={department}
+                  onChange={setDepartment}
+                  options={optionsDepartment}
+                />
+              </div>
+              <div className="mb-4" />
+              <div className="mb-4" />
+            </div>
+            <div className="mb-4" />
+
+     
+            <div>
+              <label
+                htmlFor="Experience range"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Experience range (in years):
+              </label>
+              <Range
+              step={1}
+              min={0}
+              max={10}
+              values={values}
+              onChange={setValues}
+              renderTrack={({ props, children }) => (
+                <div
+                  {...props}
+                  style={{
+                    ...props.style,
+                    height: "6px",
+                    width: "20%",
+                    marginTop: "30px",
+                    backgroundColor: "#ccc",
+                  }}
+                >
+                  {children}
+                </div>
+              )}
+              renderThumb={({ props, index, isDragged }) => {
+                return (
+                  <div
+                    {...props}
+                    style={{
+                      ...props.style,
+                      height: "20px",
+                      width: "20px",
+                      borderRadius: "50%",
+                      backgroundColor: "#FFC83D",
+                    }}
+                  >
+                    <span style={{ position: 'absolute', top: '-20px'  }} >
+                      {values[index]}
+                    </span>
+                  </div>
+                  
+                );
+              }}
+            />
+            
+          </div>
           </>
         );
       case 2:
@@ -177,6 +292,7 @@ const UpdatePost = ({ jobPost, onClose }) => {
       {renderStep()}
       {renderNavigationButtons()}
     </form>
+    <ToastContainer />
     </div>
   );
 };

@@ -18,6 +18,7 @@ export const createJobApplication = async (formData) => {
       selectedDepartment,
       postid,
       experience,
+      experiencerange,
       countryorregion,
       city,
       stateorprovince,
@@ -42,6 +43,7 @@ export const createJobApplication = async (formData) => {
       selectedDepartment,
       postid,
       experience,
+      experiencerange: experiencerange.split(',').map(Number),
       countryorregion,
       city,
       stateorprovince,
@@ -66,7 +68,8 @@ export const getJobApplication = async () => {
         return { ...application.toObject(), jobpostApp }; // Convert to object to ensure proper merging
       })
     );
-    console.log(applicationsWithJobPostData);
+  
+
     return applicationsWithJobPostData;
   } catch (error) {
     console.error('Error fetching job applications:', error);
@@ -75,7 +78,7 @@ export const getJobApplication = async () => {
 };
 
 export const deleteApplication = async (_id) => {
-  try {console.log(_id);console.log(_id);console.log(_id);
+  try {
     const jobApplicationData = await JobApplication.findByIdAndDelete(_id);
 
     return jobApplicationData;

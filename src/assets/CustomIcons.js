@@ -10,7 +10,6 @@ import { PiCertificate } from "react-icons/pi";
 import { FaFilePdf } from "react-icons/fa6";
 import { FcDepartment } from "react-icons/fc";
 import { MdSummarize } from "react-icons/md";
-import { FaFileUpload } from "react-icons/fa";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 export const HomeIcon = () => <div className='hover:text-blue-900'> <AiOutlineHome size={25} style={{opacity:"0.7",color:'#005997'}} /></div>
 export const PostAddIcon = () => <div className='hover:text-blue-900'> <MdOutlinePostAdd size={25} style={{opacity:"0.7",color:'#005997'}} /></div>

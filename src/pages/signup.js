@@ -1,5 +1,5 @@
 // pages/Signup.js
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import SpinnerIcon from "@/components/SpinnerIcon";
 

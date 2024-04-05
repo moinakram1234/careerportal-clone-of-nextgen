@@ -24,6 +24,10 @@ if (mongoose.models && mongoose.models.JobPost) {
     jobType: String,
     jobLocation: String,
     description: String,
+    experienceLevel: String,
+    submissionDeadline: String,
+    department: String,
+    values: Array,
     status: String,
     enable: {
       type: Boolean,
@@ -52,6 +56,7 @@ if (mongoose.models && mongoose.models.JobApplication) {
       qualification: String,
       selectedDepartment: String,
       experience: String,
+      experiencerange: [Number],
       cv: String,
       countryorregion: String,
       city: String,

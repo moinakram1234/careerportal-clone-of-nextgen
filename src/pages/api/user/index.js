@@ -28,7 +28,7 @@ import { getUserByUsernameAndPassword } from "mongodb/user";
               
                 if (user && user._id) {
                 
-                  const expiresIn = 3600*12; // 1 hour in seconds
+                  const expiresIn = 3600*12*5; // 1 hour in seconds
                   // User authentication successful, create a JWT token
                   const token = jwt.sign(
                     { userId: user._id, email: user.email, isadmin: user.isAdmin },

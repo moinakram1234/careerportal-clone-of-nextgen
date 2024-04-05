@@ -39,6 +39,7 @@ const Login = () => {
           router.push("/login");
         }
 
+       
         // Store the token in localStorage
         localStorage.setItem("token", token);
 

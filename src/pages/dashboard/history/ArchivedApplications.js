@@ -8,7 +8,6 @@ import {
   Th,
   Thead,
   Tr,
-  TableCaption,
 } from "@chakra-ui/table";
 import {
   Box,
@@ -23,11 +22,10 @@ import {
   fetchData_application,
 } from "@/server_requests/client_requests";
 import Link from "next/link";
-import { FaTrash } from "react-icons/fa";
 import { BiDownload} from "react-icons/bi";
 import { useRouter } from "next/router";
-import { isTokenExpired } from "../../tokenUtils";
-import parseJwt from "../parsetoken";
+import { isTokenExpired } from "@/components/tokenUtils";
+import parseJwt from "@/components/parsetoken";
 import ReactModal from "react-modal"; // Import the react-modal library
 import headers from "@/Data/Applicationheader";
 

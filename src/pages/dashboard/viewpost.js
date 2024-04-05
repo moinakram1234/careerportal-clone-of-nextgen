@@ -11,6 +11,7 @@ import "react-quill/dist/quill.bubble.css";
 import {
   deleteJobPost,
   fetchJobPosts,
+  notify_to_users,
   updateEnableStatus,
 } from "@/server_requests/client_requests";
 import {
@@ -29,11 +30,19 @@ import {
   Input,
   ChakraProvider,
   extendTheme,
+  Menu,
+  IconButton,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
 } from "@chakra-ui/react";
 import Loader from "@/components/loader";
 import { useRouter } from "next/router";
-import { isTokenExpired } from "../tokenUtils";
-import parseJwt from "./parsetoken";
+import { isTokenExpired } from "@/components/tokenUtils";
+import parseJwt from "@/components/parsetoken";
+import { DeleteIcon, DownloadIcon, EditIcon, EmailIcon } from "@chakra-ui/icons";
+import { RxDropdownMenu } from "react-icons/rx";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const PostJobs = () => {
@@ -51,6 +60,7 @@ const PostJobs = () => {
     "Job Location",
     "Description",
     "Created At",
+    "Enable/Disable",
   ];
   const redirectToHome = () => router.push("/");
 
@@ -115,14 +125,28 @@ const PostJobs = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+  const handle_to_notify = async (_id) => {
+    try {
+      // Get the list of candidates for the job post
+      const Notify= await notify_to_users(_id);
+
+      // Show a success message
+      toast("Notifications sent to all candidates");
+    } catch (error) {
+      console.error("Error sending notifications:", error);
+      // Handle error appropriately
+    }
+  };
+
+
   //delete job post
   const handleDelete = async (_id) => {
     try {
-      setIsdeleting(true);
+      // setIsdeleting(true);
       const deleted = await deleteJobPost(_id);
 
       if (deleted) {
-        setIsdeleting(false);
+        // setIsdeleting(false);
         setJobPosts((prevJobPosts) =>
           prevJobPosts.filter((jobPost) => jobPost._id !== _id)
         );
@@ -143,7 +167,7 @@ const PostJobs = () => {
         ...prevStates,
         [_id]: updatedEnableState,
       }));
-      alert(_id);
+     
       const status = await updateEnableStatus(_id, updatedEnableState);
       toast(status);
     } catch (error) {
@@ -177,145 +201,177 @@ const PostJobs = () => {
     return formattedDate;
   };
 
-
   return (
     <div>
       {isValidToken == true ? (
         <div>
-        <BaseLayout>
-          <div className="mt-5">
-            <ChakraProvider theme={theme}>
-              <Box p={8} >
-                <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
-                  <Input
-                    placeholder="Search..."
-                    mb={4}
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                  />
-                </div>
-                <TableContainer>
-                  <Table variant="simple" >
-                    <Thead
-                      className="bg-[#FFC83D]  border"
-                      style={{ borderRadius: "20px" }}
-                    >
-                      <Tr>
-                        {headers.map((header, index) => (
-                          <Th key={index} >{header}</Th>
-                        ))}
-                        <Th>Actions</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {jobPosts != null ? (
-                        jobPosts
-                          .filter(
-                            (jobPost) =>
-                              jobPost.jobTitle.toLowerCase().includes(
-                                searchInput.toLowerCase()
-                              ) ||
-                              jobPost.jobType
-                                .toLowerCase()
-                                .includes(searchInput.toLowerCase()) ||
-                              jobPost.jobLocation
-                                .toLowerCase()
-                                .includes(searchInput.toLowerCase()) ||
-                              jobPost.description
-                                .toLowerCase()
-                                .includes(searchInput.toLowerCase())
-                          )
-                          .map((jobPost, index) => (
-                            <Tr key={index} className="border">
-                              <Td>{jobPost.jobTitle}</Td>
-                              <Td>{jobPost.jobType}</Td>
-                              <Td>{jobPost.jobLocation}</Td>
-                              <Td>
-                                {" "}
-                                <div className="flex ">
-                                  <ReactQuill
-                                    className=""
-                                    readOnly={true}
-                                    theme={"bubble"}
-                                    value={
-                                      expandedDescriptions[index]
-                                        ? jobPost.description || ""
-                                        : jobPost.description
-                                        ? `${jobPost.description.substring(
-                                            0,
-                                            30
-                                          )}....`
-                                        : ""
-                                    }
-                                  />
-                                </div>
-                              </Td>
+          <BaseLayout>
+            <div className="mt-5">
+              <ChakraProvider theme={theme}>
+                <Box p={8}>
+                  <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
+                    <Input
+                      placeholder="Search..."
+                      mb={4}
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                    />
+                  </div>
+                  <TableContainer>
+                    <Table variant="simple">
+                      <Thead
+                        className="bg-[#FFC83D]  border"
+                        style={{ borderRadius: "20px" }}
+                      >
+                        <Tr>
+                          {headers.map((header, index) => (
+                          <Th key={index}>{header}</Th>
+                          ))}
+                          <Th>Actions</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {jobPosts != null ? (
+                          jobPosts
+                            .filter(
+                              (jobPost) =>
+                                jobPost.jobTitle
+                                  .toLowerCase()
+                                  .includes(searchInput.toLowerCase()) ||
+                                jobPost.jobType
+                                  .toLowerCase()
+                                  .includes(searchInput.toLowerCase()) ||
+                                jobPost.jobLocation
+                                  .toLowerCase()
+                                  .includes(searchInput.toLowerCase()) ||
+                                jobPost.description
+                                  .toLowerCase()
+                                  .includes(searchInput.toLowerCase())
+                            )
+                            .map((jobPost, index) => (
+                              <Tr key={index} className="border">
+                                <Td>{jobPost.jobTitle}</Td>
+                                <Td>{jobPost.jobType}</Td>
+                                <Td>{jobPost.jobLocation}</Td>
+                                <Td>
+                                  {" "}
+                                  <div className="flex ">
+                                    <ReactQuill
+                                      className=""
+                                      readOnly={true}
+                                      theme={"bubble"}
+                                      value={
+                                        expandedDescriptions[index]
+                                          ? jobPost.description || ""
+                                          : jobPost.description
+                                          ? `${jobPost.description.substring(
+                                              0,
+                                              30
+                                            )}....`
+                                          : ""
+                                      }
+                                    />
+                                  </div>
+                                </Td>
 
-                              <Td> {formatCreatedAt(jobPost.createdAt)}</Td>
-                              <Td>
-                                {/* Add your action buttons here */}
-
-                                <div className="flex gap-4">
-                                  <Button
-                                    onClick={() => handleEdit(jobPost)}
-                                    size="sm"
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    onClick={() => handleDelete(jobPost._id)}
-                                    colorScheme="red"
-                                    size="sm"
-                                  >
-                                    Delete
-                                  </Button>
-                                  <button
-                                    onClick={() =>
-                                      handleToggleEnable(jobPost._id)
-                                    }
-                                  >
-                                    <div
-                                      className={`w-10 h-5 rounded-full   ${
-                                        enableStates[jobPost._id]
-                                          ? "bg-[#FFC83D]"
-                                          : "bg-[red] blur-5 "
-                                      }`}
+                                <Td> {formatCreatedAt(jobPost.createdAt)}</Td>
+                                <Td>
+                                  
+                                    <button
+                                      onClick={() =>
+                                        handleToggleEnable(jobPost._id)
+                                      }
                                     >
                                       <div
-                                        className={`bg-white w-5 h-5 rounded-full shadow-md transform ${
+                                        className={`w-10 h-5 rounded-full   ${
                                           enableStates[jobPost._id]
-                                            ? "translate-x-6"
-                                            : ""
-                                        } transition`}
-                                      ></div>
-                                    </div>
-                                  </button>
-                                </div>
-                              </Td>
-                            </Tr>
-                          ))
-                      ) : (
-                        <Loader />
-                      )}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </ChakraProvider>
-            {isModalOpen && (
-              <Modal onClose={handleCloseModal}>
-                <UpdatePost
-                  jobPost={selectedJobPost}
-                  onClose={handleCloseModal}
-                />
-              </Modal>
-            )}{" "}
-          </div>
-        </BaseLayout></div>
+                                            ? "bg-[#FFC83D]"
+                                            : "bg-[red] blur-5 "
+                                        }`}
+                                      >
+                                        <div
+                                          className={`bg-white w-5 h-5 rounded-full shadow-md transform ${
+                                            enableStates[jobPost._id]
+                                              ? "translate-x-6"
+                                              : ""
+                                          } transition`}
+                                        ></div>
+                                      </div>
+                                    </button>
+                            
+                                </Td>
+
+                                <Td>
+                                  {/* Add your action buttons here */}
+                                  <Menu>
+                                    <IconButton
+                                      as={MenuButton}
+                                      aria-label="Options"
+                                      icon={<RxDropdownMenu size={25} />}
+                                      variant="unstyled"
+                                      _focus={{ outline: "none" }}
+                                    />
+                                    <MenuList>
+                                      <MenuItem onClick={() => handle_to_notify(jobPost._id)}>
+                                        <Icon
+                                          as={EmailIcon} // Change this to the actual icon you want to use
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Notify to all Candidates
+                                      </MenuItem>
+                                      <MenuItem onClick={() => handleEdit(jobPost)}>
+                                        <Icon
+                                          as={EditIcon} // Change this to the actual icon you want to use
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Edit
+                                      </MenuItem>
+                                      <MenuItem onClick={() => handleDelete(jobPost._id)}>
+                                        <Icon
+                                          color="red"
+                                          as={DeleteIcon} // Change this to the actual icon you want to use
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Delete
+                                      </MenuItem>
+                                    </MenuList>
+                                  </Menu>
+                                </Td>
+                              </Tr>
+                            ))
+                        ) : (
+                          <div className="w-[80%] absolute h-[80vh]  flex justify-center items-center">
+        <div className="filterloading "></div>
+       </div>
+                        )}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+              </ChakraProvider>
+              {isModalOpen && (
+                <Modal onClose={handleCloseModal}>
+                  <UpdatePost
+                    jobPost={selectedJobPost}
+                    onClose={handleCloseModal}
+                  />
+                </Modal>
+              )}{" "}
+            </div>
+          </BaseLayout>
+        </div>
       ) : (
         <p>session expired</p>
       )}
+      <ToastContainer />
     </div>
+    
   );
 };
 

@@ -44,12 +44,13 @@ export default async function handler(req, res) {
           address,
           postid,
           experience,
+          experiencerange,
           countryorregion,
           city,
           stateorprovince,
           zipcode,
         } = req.body;
-    
+
         // Access the uploaded file in memory
         const cvBuffer = req.file.buffer;
 
@@ -74,8 +75,9 @@ export default async function handler(req, res) {
               selectedDepartment,
               cv: result.secure_url, // Use the secure URL from Cloudinary
               address,
-              postid: postid[1],
+              postid,
               experience,
+              experiencerange,
               countryorregion,
               city,
               stateorprovince,

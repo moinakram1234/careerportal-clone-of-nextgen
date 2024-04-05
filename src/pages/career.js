@@ -1,8 +1,11 @@
 import BaseLayout from "@/components/Baselayout";
-import DepartmentSectionJobs from "@/components/DepartmentSectionJobs";
-import CareerSection from "./careersection";
+
+import CareerSection from "@/components/landingpage/careersection";
 import BottonSection from "@/components/bottomsection";
-import MISconponentsection from "@/components/MISconponentsection";
+import MISconponentsection from "@/components/landingpage/MISconponentsection";
+import Studentsection from "@/components/landingpage/studentsection";
+import DepartmentSectionJobs from "@/components/landingpage/DepartmentSectionJobs";
+
 const Career = () => {
  
   return (
@@ -11,8 +14,10 @@ const Career = () => {
        <CareerSection/>
        <DepartmentSectionJobs/>
        <MISconponentsection/>
-       <BottonSection />
+        <Studentsection/>
+        <BottonSection />
         </BaseLayout>
+      
         </div>
 
   );

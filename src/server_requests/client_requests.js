@@ -25,7 +25,7 @@ export const deleteData_application = async (_id, path) => {
     return false; // Indicate deletion failure
   }
 };
-const createJobapplication = async (formData, pdfFile, postid) => {
+const createJobapplication = async (formData, pdfFile) => {
   try {
     const bodyFormData = new FormData();
 
@@ -36,10 +36,8 @@ const createJobapplication = async (formData, pdfFile, postid) => {
 
     // Append PDF file to FormData
     bodyFormData.append('pdfFile', pdfFile, 'application.pdf');
+    console.log(formData);
 
-    // Append postid to FormData
-    bodyFormData.append('postid', postid);
-    
     const response = await fetch(`${apiAppUrl}`, {
       method: "POST",
       body: bodyFormData,
@@ -81,6 +79,7 @@ export const fetchData_application = async () => {
 // api.js (or any other suitable file name)
 export const deleteJobPost = async (_id) => {
   try {
+ console.log(_id)
     const response = await fetch(`${process.env.NEXT_PUBLIC_URL}?_id=${_id}`, {
       method: "DELETE",
     });
@@ -94,6 +93,31 @@ export const deleteJobPost = async (_id) => {
   } catch (error) {
     console.error("Error deleting job post:", error);
     return false; // Indicate deletion failure
+  }
+};
+export const notify_to_users = async (_id) => {
+  try {
+    // Fetch the list of candidates for the job post from the server
+    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/notify?_id=${_id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      // You can include any necessary body data here if required
+    });
+if (response.ok) {
+      return "Notifications sent successfully";
+    }
+  
+    else {
+      // If there's an error in sending notifications, log the error and return false
+      console.error("Error sending notifications:", response.statusText);
+      return false;
+    }
+  } catch (error) {
+    // If there's an error in the fetch operation itself, log the error and return false
+    console.error("Error sending notifications:", error);
+    return false;
   }
 };
 
@@ -178,6 +202,10 @@ const updateJobPost = async ({
   jobtype,
   joblocation,
   description,
+  department,
+  submissionDeadline,
+  experienceLevel,
+  values,
 }) => {
   try {
     const response = await fetch(apiUrl, {
@@ -191,6 +219,10 @@ const updateJobPost = async ({
         jobtype,
         joblocation,
         description,
+        department,
+        submissionDeadline,
+        experienceLevel,
+        values,
       }),
     });
 

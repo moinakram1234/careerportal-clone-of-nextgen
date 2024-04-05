@@ -29,7 +29,7 @@ body {
   display: flex;
   height: 100vh;
   position: relative;
-  gap: 2rem;
+ 
 }
 
 .layout__main-content {
@@ -107,11 +107,12 @@ subitem
 
 .sidebar__icon {
   display: inline-block;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .sidebar__name {
   margin-left: 0.5rem;
+  font-size: 0.9rem;
 }
 .sidebar__name--active {
   color: black;
@@ -159,6 +160,20 @@ subitem
   align-items: center;
   z-index: 99;
 }
+
+/* HTML: <div class="loader"></div> */
+.filterloading {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 3px;
+  background: 
+    radial-gradient(farthest-side,#ffa516 95%,#0000) 50% 0/12px 12px no-repeat,
+    radial-gradient(farthest-side,#0000 calc(100% - 5px),#ffa516 calc(100% - 4px)) content-box;
+  animation: l6 2s infinite ;
+}
+@keyframes l6 {to{transform: rotate(1turn)}}
+
 
 .wrapper.active + body::before {
   display: block;
@@ -449,3 +464,59 @@ subitem
   font-size: 1.15rem;
   font-weight: 600;
 }
+
+
+
+
+.card {
+  position: relative;
+  width: 400px;
+  height: 120px;
+  border-radius: 10px;
+  padding: 0 50px;
+  margin: 50px auto;
+  background-color: rgb(162, 166, 178);
+}
+.title {
+  font-family: sans-serif;
+  font-weight: 100;
+  text-transform: uppercase;
+  padding: 10px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.scale {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 25px 45px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.scale_item {
+  color: rgb(57, 48, 49);
+  font-family: sans-serif;
+  font-weight: 300;
+}
+.contactus_bg{
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 200 200'%3E%3Cpolygon fill='%23DCEFFA' points='100 0 0 100 100 100 100 200 200 100 200 0'/%3E%3C/svg%3E");
+}
+
+
+  /* Define the scale animation */
+  @keyframes scaleAnimation {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Apply the animation to the targeted element */
+  .job-description {
+    animation: scaleAnimation 0.9s ease forwards;
+  }

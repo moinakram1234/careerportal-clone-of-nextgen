@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import SpinnerIcon from "@/components/SpinnerIcon";
-//import particlescong from "@/assets/particles";
-//import { Particles } from "@tsparticles/react";
 const ChangepassWithOTP = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");

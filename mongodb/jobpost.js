@@ -8,15 +8,22 @@ export const createJobPost = async (
   jobTitle,
   jobType,
   jobLocation,
-  description
+  description,
+  experienceLevel,
+  submissionDeadline,
+  department,
+  values
 ) => {
   try {
-    console.log(jobTitle, jobType, jobLocation, description);
     const jobPostData = await JobPost.create({
       jobTitle,
       jobType,
       jobLocation,
       description,
+      experienceLevel: experienceLevel.value,
+      submissionDeadline,
+      department: department.value,
+      values
     });
 
     return jobPostData;
@@ -58,6 +65,7 @@ export const getSpecificPosts = async (id) => {
 
 export const deletePost = async (id) => {
   try {
+    console.log(id);
     const jobPostData = await JobPost.findOneAndUpdate(
       { _id: id },
       { $set: { status: "deleted" } },
@@ -82,21 +90,29 @@ export const deletePost = async (id) => {
 };
 
 export const updatePost = async (
-  id,
+  _id,
   jobTitle,
   jobType,
   jobLocation,
-  description
+  description,
+  department,
+  submissionDeadline,
+  experienceLevel,
+  values,
 ) => {
   try {
     const jobPostData = await JobPost.findOneAndUpdate(
-      { _id: id },
+      { _id: _id },
       {
         $set: {
           jobTitle,
           jobType,
           jobLocation,
           description,
+          department: department.value,
+          submissionDeadline,
+          experienceLevel: experienceLevel.value,
+          values,
         },
       },
       { new: true }

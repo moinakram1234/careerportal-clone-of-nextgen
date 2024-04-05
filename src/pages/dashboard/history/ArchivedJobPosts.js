@@ -31,8 +31,8 @@ import {
 } from "@/server_requests/client_requests";
 import Loader from "@/components/loader";
 import { useRouter } from "next/router";
-import { isTokenExpired } from "../../tokenUtils";
-import parseJwt from "../parsetoken";
+import { isTokenExpired } from "@/components/tokenUtils";
+import parseJwt from "@/components/parsetoken";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
