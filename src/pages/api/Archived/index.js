@@ -1,4 +1,4 @@
-import { deletePost, updateJobPostAndAppStatus } from "mongodb/archieved";
+import { deletePost, updateJobPostAndAppStatus } from "../mongodb/archieved";
 
 
 export default async function handler(req, res) {

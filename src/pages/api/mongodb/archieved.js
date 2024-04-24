@@ -1,5 +1,5 @@
 // archieved.js
-import db from "mongodb/db";
+import db from "../mongodb/db";
 import { JobPost, JobApplication } from "./schema";
 db();
 

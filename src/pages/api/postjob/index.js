@@ -5,7 +5,7 @@ import {
   getPostById,
   updateEnableStatus,
   updatePost,
-} from "mongodb/jobpost";
+} from "../mongodb/jobpost";
 
 export default async function handler(req, res) {
   try {

@@ -2,7 +2,7 @@
 import cloudinary from "cloudinary";
 import multer from "multer";
 import streamifier from "streamifier";
-import { createJobApplication, deleteApplication, getJobApplication } from "mongodb/jobapplication";
+import { createJobApplication, deleteApplication, getJobApplication } from "../mongodb/jobapplication";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
