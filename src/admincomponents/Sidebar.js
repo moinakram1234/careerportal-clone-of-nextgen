@@ -72,7 +72,7 @@ const Sidebar = () => {
                       <ul>
                         {subItems.map((subItem) => (
                           <li key={subItem.name}>
-                            <Link
+                            <a
                               className={`sidebar__sublink ${
                                 router.pathname === subItem.href
                                   ? "sidebar__link--active "
@@ -89,14 +89,14 @@ const Sidebar = () => {
                               >
                                 {subItem.name}
                               </span>
-                            </Link>
+                            </a>
                           </li>
                         ))}
                       </ul>
                     )}
                   </>
                 ) : (
-                  <Link
+                  <a
                     className={`sidebar__link ${
                       router.pathname === href ? "sidebar__link--active " : ""
                     }`}
@@ -112,7 +112,7 @@ const Sidebar = () => {
                     >
                       {name}
                     </span>
-                  </Link>
+                  </a>
                 )}
               </li>
             );
