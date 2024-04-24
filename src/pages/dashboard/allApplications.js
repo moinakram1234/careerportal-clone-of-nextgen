@@ -8,14 +8,13 @@ import {
   Th,
   Thead,
   Tr,
-  TableCaption,
 } from "@chakra-ui/table";
 import {
   Box,
   Input,
   ChakraProvider,
   extendTheme,
-  Select,
+
   Menu,
   MenuButton,
   MenuItem,
@@ -35,13 +34,12 @@ import parseJwt from "@/components/parsetoken";
 import ReactModal from "react-modal"; // Import the react-modal library
 import headers from "@/Data/Applicationheader";
 import {
-  AddIcon,
-  ChevronDownIcon,
+
   DeleteIcon,
   DownloadIcon,
 } from "@chakra-ui/icons";
 import { BiFilter } from "react-icons/bi";
-import AppFilters from "./app_filters";
+import AppFilters from "@/admincomponents/admindashbord/app_filters";
 
 
 const ViewallApplications = () => {
@@ -100,7 +98,7 @@ const ViewallApplications = () => {
     });
     return formattedDate;
   };
-  useEffect(() => {
+  useEffect(() => { if (typeof document !== 'undefined') {
     checkTokenExpiration();
     const loadData = async () => {
       try {
@@ -120,7 +118,7 @@ const ViewallApplications = () => {
       }
     };
 
-    loadData();
+    loadData();}
   }, []);
   const deleteApplication = async (applicationId, path) => {
     await deleteData_application(applicationId, path);

@@ -10,28 +10,27 @@ import {
   FacebookShareButton,
   LinkedinShareButton,
   WhatsappShareButton,
+  dynamic,
   TwitterShareButton,
   FacebookIcon,
   LinkedinIcon,
   WhatsappIcon,
   TwitterIcon,
-  dynamic,
   FaLocationCrosshairs,
   WiTime5,
   PiBagSimpleFill,
   Button,
 } from "@/components/export_libraries/exportlibrary";
-import Relative_Post from "./relative-post/relative_post";
+import Relative_Post from "@/components/relative-post/relative_post";
 import { useMediaQuery } from "@chakra-ui/react";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 const JobDetails = () => {
   const [isLargerThan800] = useMediaQuery("(min-width: 1080px)");
   const router = useRouter();
   const [jobDetails, setJobDetails] = useState(null);
   const [postid, setPostId] = useState(router.query.postid || "");
   const [isLoading, setIsLoading] = useState(true);
-
+  const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
   const handleRelativePostClick = () => {
     setIsLoading(true);
 
@@ -103,7 +102,9 @@ const JobDetails = () => {
                 <div className="filterloading"></div>
               </div>
             ) : (
-              <div className={`job-description ${isLargerThan800 ? "w-2/3" : ""}`}>
+              <div
+                className={`job-description ${isLargerThan800 ? "w-2/3" : ""}`}
+              >
                 <div className="  w-full  ">
                   <div
                     className={`${
@@ -149,7 +150,7 @@ const JobDetails = () => {
                     </div>
                   </div>
                   {jobDetails ? (
-                    <div >
+                    <div>
                       <div className="lg:flex ">
                         <h3 className="text-xl pl-5 font-semibold p-5 flex">
                           Job Description

@@ -1,8 +1,6 @@
+'use client';
 import BaseLayout from "../../admincomponents/BaseLayout";
 import React, { useState, useEffect } from "react";
-
-
-import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,7 +9,8 @@ import Loader from "@/components/loader";
 import { useRouter } from "next/router";
 import { isTokenExpired } from "@/components/tokenUtils";
 import parseJwt from "@/components/parsetoken";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill =
+typeof window !== "undefined" ? require("react-quill") : () => false;
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -124,26 +123,6 @@ const PostJobs = () => {
   };
   const renderStepSeparators = () => {
     return (
-    // <div className="flex gap-2   mb-8">
-    //     <hr
-    //       className={` border-t-4 w-[16.7%]  ${
-    //         step == 1 ? "border-[#FFC83D]" : "border-gray-300"
-    //       } `}
-    //     />
-    //     <hr
-    //       className={` border-t-4 w-[16.7%]   ${
-    //         step == 2 ? "border-[#FFC83D]" : "border-gray-300"
-    //       }`}
-    //     />
-    //     <hr
-    //       className={` border-t-4 w-[16.7%]   ${
-    //         step == 3 ? "border-[#FFC83D]" : "border-gray-300"
-    //       }`}
-    //     />
-    //   </div>
-
-
-
 <div className="flex gap-2   mb-8">
      <ol class="flex items-center w-full mb-4 sm:mb-5">
     <li class={`flex w-full items-center   after:content-[''] after:w-full after:h-1 after:border-b transition duration-700 ease-in-out ${step==1?"after:border-blue-100 ":"after:border-amber-400 "}after:border-4 after:inline-block `}>

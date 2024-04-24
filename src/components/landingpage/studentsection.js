@@ -29,7 +29,7 @@ const data = [
   },
 ];
 
-function DataList() {
+const DataList = () => {
   const darkMode = useSelector((state) => state.darkMode);
 
 

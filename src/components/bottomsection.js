@@ -1,6 +1,4 @@
 import React from "react";
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
-import { Container, Flex, Text, Link } from "@chakra-ui/react";
 
 const Footer = () => {
   return (

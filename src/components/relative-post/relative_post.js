@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import {  Flex} from "@chakra-ui/react";
 import {
   fetchJobPostDetails,
   fetchJobPosts,

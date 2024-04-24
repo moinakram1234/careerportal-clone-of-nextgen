@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import BaseLayout from "@/admincomponents/BaseLayout";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import UpdatePost from "@/admincomponents/updatepost";
-import Modal from "@/admincomponents/modal";
+
 import "react-quill/dist/quill.bubble.css";
 import {
   Table,
@@ -15,7 +13,6 @@ import {
   Th,
   Thead,
   Tr,
-  TableCaption,
 } from "@chakra-ui/table";
 import {
   Box,

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import NoSSR from "react-no-ssr";
-import dynamic from "next/dynamic";
+
 import "react-quill/dist/quill.bubble.css";
 import { fetchJobPosts } from "@/server_requests/client_requests";
 import { useSelector } from "react-redux";
@@ -12,11 +11,9 @@ import { isTokenExpired } from "@/components/tokenUtils";
 import HeroPageImage from "./Heropage";
 import { BsFillQuestionSquareFill } from "react-icons/bs";
 
-
 // import Slider from "react-slick";
 // import Image from "next/image";
-const Typewriter = dynamic(() => import("typewriter-effect"), { ssr: false });
-
+import Typewriter from "typewriter-effect";
 
 const CareerSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,11 +21,11 @@ const CareerSection = () => {
   const [jobPosts, setJobPosts] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState([]);
   const darkMode = useSelector((state) => state.darkMode);
-  const [postid, setPostid] = useState(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const inputRef = useRef(null);
-  const jobPostsContainerRef = useRef(null);
+
   const { data: session } = useSession();
   const router = useRouter();
   const [usertoken, setUsertoken] = useState(null);
@@ -70,7 +67,7 @@ const CareerSection = () => {
 
   const handleApplyNow = (id) => {
     // Add your logic for handling the "Apply Now" button click
-  router.push(`/applyapplication?postid=${id}`);
+    router.push(`/applyapplication?postid=${id}`);
   };
 
   useEffect(() => {
@@ -115,13 +112,10 @@ const CareerSection = () => {
     return formattedDate;
   };
 
-
-
   const handleInputChange = (e) => {
     // Update the search query and fetch suggestions based on the input value
     const inputValue = e.target.value;
     setSearchQuery(inputValue);
-
   };
 
   // const settings = {
@@ -140,45 +134,53 @@ const CareerSection = () => {
   //   { src: "/image5.jpg", alt: "Image 5", width: 500, height: 300 },
   //   // Add more image data as needed
   // ];
-const handleSearch = () => {
-  // Add your logic for handling the search button click
-  // console.log(searchQuery);
-  if (searchQuery) {
-    router.push(`/jobs?tag=${searchQuery}`);
-  }
-}
+  const handleSearch = () => {
+    // Add your logic for handling the search button click
+    // console.log(searchQuery);
+    if (searchQuery) {
+      router.push(`/jobs?tag=${searchQuery}`);
+    }
+  };
   return (
-    <div >
+    <div>
       {(session || usertoken) && (
         <div>
-          <div
-            style={{  }}
-            className={ `  w-full ${darkMode ? "" : "bg-white"}`}
-          >
+          <div style={{}} className={`  w-full ${darkMode ? "" : "bg-white"}`}>
             <div className=" ">
               {/* <ImageGallery /> */}
               <HeroPageImage />
             </div>
           </div>
-          <div className={` absolute top-[100%]  z-10 inset-0 flex flex-col justify-center items-center `}>
-            <div className={`border rounded-2xl lg:w-[70%] p-10 items-center text-center ${darkMode ? 'bg-black' : 'bg-white'}`}>
-            <NoSSR>
-                <div
-                  className={`text-3xl  lg:text-5xl ${darkMode ? 'text-white' : 'text-black'} font-signature rounded `}
-                >
-                  <Typewriter
-                    options={{
-                      strings: ["Join the Team"],
-                      autoStart: true,
-                      loop: true,
-                    }}
-                  />
-                </div>
-              </NoSSR>
+          <div
+            className={` absolute top-[100%]  z-10 inset-0 flex flex-col justify-center items-center `}
+          >
+            <div
+              className={`border rounded-2xl lg:w-[70%] p-10 items-center text-center ${
+                darkMode ? "bg-black" : "bg-white"
+              }`}
+            >
+              <div
+                className={`text-3xl  lg:text-5xl ${
+                  darkMode ? "text-white" : "text-black"
+                } font-signature rounded `}
+              >
+                <Typewriter
+                  options={{
+                    strings: ["Join the Team"],
+                    autoStart: true,
+                    loop: true,
+                  }}
+                />
+              </div>
 
-              <h5 className={`text-center text-sm lg:text-lg sm:w-3/4 md:w-2/2 lg:w-2/3 xl:w-2/4 mx-auto ${darkMode ? 'text-white' : 'text-black'}`}>
-    Explore Our Exceptional Work Environment and Outstanding Projects...
-</h5>
+              <h5
+                className={`text-center text-sm lg:text-lg sm:w-3/4 md:w-2/2 lg:w-2/3 xl:w-2/4 mx-auto ${
+                  darkMode ? "text-white" : "text-black"
+                }`}
+              >
+                Explore Our Exceptional Work Environment and Outstanding
+                Projects...
+              </h5>
 
               <br></br>
               <br></br>
@@ -186,15 +188,17 @@ const handleSearch = () => {
                 <input
                   type="text"
                   placeholder="Search for Job title"
-                  className={`border  lg:w-[70%] h-full pl-5 rounded-l-lg ${darkMode ? 'text-white' : 'text-black'}`}
+                  className={`border  lg:w-[70%] h-full pl-5 rounded-l-lg ${
+                    darkMode ? "text-white" : "text-black"
+                  }`}
                   required
                   value={searchQuery}
-                  onChange={(e)=>handleInputChange(e)}
+                  onChange={(e) => handleInputChange(e)}
                   ref={inputRef}
                 />
                 <button
                   className={`bg-[#504ED7] text-white h-full w-20 lg:w-32 rounded-r-lg `}
-                  onClick={()=>handleSearch()}
+                  onClick={() => handleSearch()}
                 >
                   Search
                 </button>
@@ -215,21 +219,20 @@ const handleSearch = () => {
                 </ul>
               )}
             </div>
-           
-            </div>
-               </div>
+          </div>
+        </div>
       )}
- <div className={`fixed bottom-4  lg:w-[35%]  right-4 mr-5 z-20 `}>
-              {isChatbotModalOpen && <Chatbot closechat={closeChatbotModal} />}
-              <div className="w-full  justify-end flex ">
-                <button
-                  className={`shadow-lg  justify-end flex bg-white rounded-lg p-2 `}
-                  onClick={openChatbotModal}
-                >
-                  <BsFillQuestionSquareFill  size={40} />
-                </button>
-              </div>
-            </div>
+      <div className={`fixed bottom-4  lg:w-[35%]  right-4 mr-5 z-20 `}>
+        {isChatbotModalOpen && <Chatbot closechat={closeChatbotModal} />}
+        <div className="w-full  justify-end flex ">
+          <button
+            className={`shadow-lg  justify-end flex bg-white rounded-lg p-2 `}
+            onClick={openChatbotModal}
+          >
+            <BsFillQuestionSquareFill size={40} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

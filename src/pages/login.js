@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect,  useState } from "react";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
@@ -35,9 +35,9 @@ const Login = () => {
         setEmail("");
         setUserPassword("");
 
-        if (!token) {
-          router.push("/login");
-        }
+        // if (!token) {
+        //   router.push("/login");
+        // }
 
        
         // Store the token in localStorage

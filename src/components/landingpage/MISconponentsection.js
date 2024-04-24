@@ -4,7 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css"; // Import the AOS styles
 import { useSelector } from "react-redux";
 import { useRouter } from 'next/router';
-function MISsection() {
+const MISsection = () =>{
   const darkMode = useSelector((state) => state.darkMode);
     useEffect(() => {
         AOS.init({

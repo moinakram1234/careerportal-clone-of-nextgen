@@ -11,7 +11,7 @@ import {
   Select,
   Stack,
 } from "@chakra-ui/react";
-import theme from "@chakra-ui/theme";
+import {theme} from "@chakra-ui/theme";
 import "react-toastify/dist/ReactToastify.css";
 import BottomSection from "../../components/bottomsection";
 import { useRouter } from "next/router";

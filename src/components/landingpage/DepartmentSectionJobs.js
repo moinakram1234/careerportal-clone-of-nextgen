@@ -4,7 +4,7 @@ import { DepartmentData } from "@/Data/staticData";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 
-function DepartmentSectionJobs() {
+const DepartmentSectionJobs = () =>{
   const darkMode = useSelector((state) => state.darkMode);
 
   const skillBoxStyle = {

@@ -2,7 +2,6 @@
 import cloudinary from "cloudinary";
 import multer from "multer";
 import streamifier from "streamifier";
-import { createAction } from "@reduxjs/toolkit";
 import { createJobApplication, deleteApplication, getJobApplication } from "mongodb/jobapplication";
 
 cloudinary.config({
