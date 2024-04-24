@@ -21,7 +21,14 @@ export default function Internship() {
   const currentYear = new Date().getFullYear();
   const [isLargerThan800] = useMediaQuery("(min-width: 1080px)");
   useEffect(() => {
-    AOS.init({ duration: 1000 });
+    AOS.init({
+      duration: 1200,
+      once: false,
+    });
+
+    window.addEventListener('scroll', () => {
+      AOS.refresh();
+    });
   }, []);
   return (
     <div>
@@ -42,26 +49,25 @@ export default function Internship() {
 
       <BaseLayout>
         <main className="">
+        <div className={`${isLargerThan800 ? "h-screen mt-20 " : "  mt-20"}`}>
+            <PepsiVideo />
+          </div>
           <div
-            className={`${
+            className={` ${
               isLargerThan800
-                ? "h-[100vh] flex justify-center"
+                ? "h-[100vh] mt-24 flex justify-center"
                 : "flex flex-col  "
             }`}
           >
             <div
               className={`${
-                isLargerThan800 ? "w-2/4 h-[100%] hidden" : " mt-24 "
+                isLargerThan800 ? "w-2/4 h-[100%] hidden" : " mt-5 "
               }`}
               data-aos="fade-down"
             >
-              <video autoPlay loop muted>
-                <source
-                  src="https://cdnl.iconscout.com/lottie/premium/thumb/business-meeting-4075375-3373374.mp4"
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </video>
+           <img className="w-[100%] h-[100%]" 
+     src="/images/student.svg" 
+     alt="Description of the image" />
             </div>
             <div
               className={`${
@@ -95,7 +101,7 @@ export default function Internship() {
               </p>
 
               <button
-                className={`bg-[#504ED7] text-white p-2 rounded-lg `}
+                className={`  p-2 border-2 border-solid `}
                 data-aos="fade-right"
               >
                 <Link href="/jobs?tag=student">View Internships</Link>
@@ -105,18 +111,12 @@ export default function Internship() {
               className={`${isLargerThan800 ? "w-2/4 h-[100%]" : "hidden"}`}
               data-aos="fade-down"
             >
-              <video className="w-[100%] h-[100%]" autoPlay loop muted>
-                <source
-                  src="https://cdnl.iconscout.com/lottie/premium/thumb/business-meeting-4075375-3373374.mp4"
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </video>
+         <img className="w-[100%] h-[100%]" 
+     src="/images/student.svg" 
+     alt="Description of the image" />
             </div>
           </div>
-          <div className={`${isLargerThan800 ? "h-screen " : ""}`}>
-            <PepsiVideo />
-          </div>
+    
           <br></br>
           <div
             className={`${

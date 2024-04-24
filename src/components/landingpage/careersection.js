@@ -71,19 +71,19 @@ const CareerSection = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setUsertoken(token);
+    // const token = localStorage.getItem("token");
+    // setUsertoken(token);
 
-    //if token expire
-    if (!session) {
-      if (!token) {
-        router.push("/");
-      }
-      if (isTokenExpired(token)) {
-        localStorage.removeItem("token");
-        router.push("/");
-      }
-    }
+    // //if token expire
+    // if (!session) {
+    //   if (!token) {
+    //     router.push("/");
+    //   }
+    //   if (isTokenExpired(token)) {
+    //     localStorage.removeItem("token");
+    //     router.push("/");
+    //   }
+    // }
 
     const fetchData = async () => {
       const data = await fetchJobPosts();
@@ -143,7 +143,8 @@ const CareerSection = () => {
   };
   return (
     <div>
-      {(session || usertoken) && (
+      {/* {(session || usertoken) && ( */}
+      { (
         <div>
           <div style={{}} className={`  w-full ${darkMode ? "" : "bg-white"}`}>
             <div className=" ">

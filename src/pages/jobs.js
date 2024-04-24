@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
-import "react-quill/dist/quill.bubble.css";
 import  {
   BottomSection,
   HStack,
@@ -61,16 +60,16 @@ export default function JobsCard() {
     const token = localStorage.getItem("token");
     setUsertoken(token);
 
-    //if token expire
-    if (!session) {
-      if (!token) {
-        router.push("/");
-      }
-      if (isTokenExpired(token)) {
-        localStorage.removeItem("token");
-        router.push("/");
-      }
-    }
+    // //if token expire
+    // if (!session) {
+    //   if (!token) {
+    //     router.push("/");
+    //   }
+    //   if (isTokenExpired(token)) {
+    //     localStorage.removeItem("token");
+    //     router.push("/");
+    //   }
+    // }
 
     const fetchData = async () => {
       const data = await fetchJobPosts();
@@ -288,7 +287,7 @@ export default function JobsCard() {
               </MenuList>
             </Menu>
 
-            <Menu>
+            {/* <Menu>
               <MenuButton
                 className="text-xs lg:text-sm border p-2 text-gray-500"
                 as={Button}
@@ -303,7 +302,7 @@ export default function JobsCard() {
                 >
                   All Job Dates
                 </MenuItem>
-                {/* Adjust this logic based on your actual date data */}
+               
                 {jobPosts_M &&
                   [
                     ...new Set(jobPosts_M.map((jobPost) => jobPost.createdAt)),
@@ -313,12 +312,12 @@ export default function JobsCard() {
                       onClick={() => setSelectedJobDate(jobDate)}
                       className="hover:text-[#2E3192] hover:bg-[#F3F4F6] hover:rounded hover:p-1 m-3"
                     >
-                      {/* You may need to format the date as per your requirements */}
+                    
                       {formatCreatedAt(jobDate)}
                     </MenuItem>
                   ))}
               </MenuList>
-            </Menu>
+            </Menu> */}
           </div>
         </div>
       </div>

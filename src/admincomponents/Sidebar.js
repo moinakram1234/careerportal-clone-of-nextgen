@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import Link from "next/link";
+
 import { useState, useContext, useEffect } from "react";
 import { SidebarContext } from "@/context/SidebarContext";
 import { useRouter } from "next/router";
 import sidebarItems from "@/Data/sidemenuData";
-import { IoTrash } from "react-icons/io5";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs"; // Import the arrow icons
 
 const Sidebar = () => {
@@ -39,7 +38,7 @@ const Sidebar = () => {
             width={80}
             height={80}
             className="sidebar__logo"
-            src="/logo.png"
+            src="/images/logo.png"
             alt="logo"
           />
           <p className="text-xl font-bold tracking-tight ">Haidri Beverages</p>

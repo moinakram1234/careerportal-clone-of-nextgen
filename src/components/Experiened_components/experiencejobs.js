@@ -17,18 +17,18 @@ export default function JobsCard() {
   const [searchInput, setSearchInput] = useState(router.query.role || "");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setUsertoken(token);
+    // const token = localStorage.getItem("token");
+    // setUsertoken(token);
 
-    if (!session) {
-      if (!token) {
-        router.push("/");
-      }
-      if (isTokenExpired(token)) {
-        localStorage.removeItem("token");
-        router.push("/");
-      }
-    }
+    // if (!session) {
+    //   if (!token) {
+    //     router.push("/");
+    //   }
+    //   if (isTokenExpired(token)) {
+    //     localStorage.removeItem("token");
+    //     router.push("/");
+    //   }
+    // }
 
     const fetchData = async () => {
       const data = await fetchJobPosts();

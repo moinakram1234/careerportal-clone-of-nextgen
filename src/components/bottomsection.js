@@ -5,7 +5,7 @@ const Footer = () => {
 <footer class="bg-gray-100">
   <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
     <div class="flex justify-center gap-5 text-gray-600 items-center">
-    <Image src="https://seeklogo.com/images/P/pepsi-new-2023-logo-D0CD05CBE5-seeklogo.com.png" alt="Haidri Beverages" width={60} />
+    <Image src="/images/logo.png" alt="Haidri Beverages" width={60} height={60}/>
   <h2 className="text-3xl">  Haidri Beverages Pvt. Ltd.</h2>
     </div>
 
