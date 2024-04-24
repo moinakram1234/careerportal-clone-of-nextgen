@@ -1,4 +1,4 @@
-import { createUser } from "mongodb/user";
+import { createUser } from "../mongodb/user";
 
 // pages/api/signup.js
 export default async function handler(req, res) {

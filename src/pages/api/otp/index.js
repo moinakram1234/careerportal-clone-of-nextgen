@@ -1,6 +1,6 @@
 // pages/api/send-otp.js
 
-import { sendOtpEmail } from "mongodb/otp";
+import { sendOtpEmail } from "../mongodb/otp";
 
 
 

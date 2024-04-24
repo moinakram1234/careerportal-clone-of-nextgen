@@ -1,4 +1,4 @@
-import { verifyOtp } from "mongodb/otp";
+import { verifyOtp } from "../mongodb/otp";
 
 
 // pages/api/verify-otp.js

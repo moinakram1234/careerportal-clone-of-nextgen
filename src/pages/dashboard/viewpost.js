@@ -22,11 +22,9 @@ import {
   Th,
   Thead,
   Tr,
-  TableCaption,
 } from "@chakra-ui/table";
 import {
   Box,
-  Button,
   Input,
   ChakraProvider,
   extendTheme,
@@ -37,13 +35,12 @@ import {
   MenuItem,
   Icon,
 } from "@chakra-ui/react";
-import Loader from "@/components/loader";
 import { useRouter } from "next/router";
 import { isTokenExpired } from "@/components/tokenUtils";
 import parseJwt from "@/components/parsetoken";
-import { DeleteIcon, DownloadIcon, EditIcon, EmailIcon } from "@chakra-ui/icons";
+import { DeleteIcon,  EditIcon, EmailIcon } from "@chakra-ui/icons";
 import { RxDropdownMenu } from "react-icons/rx";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
 
 const PostJobs = () => {
   const [jobPosts, setJobPosts] = useState(null);
@@ -53,6 +50,8 @@ const PostJobs = () => {
   const [enableStates, setEnableStates] = useState({});
   const [isValidToken, setIsValidToken] = useState(false);
   const router = useRouter();
+  const ReactQuill =
+  typeof window !== "undefined" ? require("react-quill") : () => false;
   const [searchInput, setSearchInput] = useState("");
   const headers = [
     "Job Title",

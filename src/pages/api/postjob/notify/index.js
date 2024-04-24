@@ -1,4 +1,4 @@
-import sendEmailToAllUsers from "mongodb/sendnotification_to_users";
+import sendEmailToAllUsers from "../../mongodb/sendnotification_to_users";
 
 export default async function handler(req, res) {
   try {

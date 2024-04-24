@@ -57,7 +57,7 @@ const Dashboard = () => {
    
     checkTokenExpiration();
     setTokenData(parseJwt(localStorage.getItem("token")));
-  }, []); // The empty dependency array ensures that this effect runs only once when the component mounts
+  }, [checkTokenExpiration]); // The empty dependency array ensures that this effect runs only once when the component mounts
 
   const signOut_token = () => {
     

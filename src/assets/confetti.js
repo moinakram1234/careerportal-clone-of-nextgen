@@ -18,7 +18,7 @@ export default function Confetti() {
       });
   }, []);
 
-  useEffect(() => fire(), []);
+  useEffect(() => fire(), [fire]);
 
 // ... (previous code)
 
