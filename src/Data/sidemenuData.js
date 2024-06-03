@@ -4,7 +4,8 @@ import { MdOutlinePostAdd } from "react-icons/md";
 import { IoDocumentAttach } from "react-icons/io5"; // Added IoTrash for deleted items
 import { IoEye } from "react-icons/io5";
 import { VscHistory } from "react-icons/vsc";
-
+import { GrDocumentMissing } from "react-icons/gr";
+import { HiDocumentCheck } from "react-icons/hi2";
 const sidebarItems = [
   {
     name: "Dashboard",
@@ -22,10 +23,21 @@ const sidebarItems = [
     icon: IoDocumentAttach,
   },
   {
+    name: "Rejected Applications",
+    href: "/dashboard/rejectedApplications",
+    icon: GrDocumentMissing,
+  },
+  {
+    name: "Accepted Applications",
+    href: "/dashboard/acceptedApplications",
+    icon: HiDocumentCheck,
+  },
+  {
     name: "View posts",
     href: "/dashboard/viewpost",
     icon: IoEye,
   },
+  
   {
     name: "Archived",
     href: "/dashboard/Archived",

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { RxDropdownMenu } from "react-icons/rx";
 import {
   Table,
@@ -14,16 +16,17 @@ import {
   Input,
   ChakraProvider,
   extendTheme,
-
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Icon,
   IconButton,
+  Checkbox,
 } from "@chakra-ui/react";
 import BaseLayout from "@/admincomponents/BaseLayout";
 import {
+  Request_To_Reject_application,
   deleteData_application,
   fetchData_application,
 } from "@/server_requests/client_requests";
@@ -33,18 +36,14 @@ import { isTokenExpired } from "@/components/tokenUtils";
 import parseJwt from "@/components/parsetoken";
 import ReactModal from "react-modal"; // Import the react-modal library
 import headers from "@/Data/Applicationheader";
-import {
-
-  DeleteIcon,
-  DownloadIcon,
-} from "@chakra-ui/icons";
+import { DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
 import { BiFilter } from "react-icons/bi";
 import AppFilters from "@/admincomponents/admindashbord/app_filters";
-
+import { FcCancel, FcOk } from "react-icons/fc";
 
 const ViewallApplications = () => {
   const [applications, setApplications] = useState(null);
-  const [App_Data,SetApp_Data]=useState(null)
+  const [App_Data, SetApp_Data] = useState(null);
   const [isValidToken, setIsValidToken] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
@@ -53,9 +52,7 @@ const ViewallApplications = () => {
   const [searchInput, setSearchInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-
-
-
+  const [selectedRows, setSelectedRows] = useState([]);
   const redirectToHome = () => router.push("/");
   const checkTokenExpiration = async () => {
     const token = localStorage.getItem("token");
@@ -98,27 +95,31 @@ const ViewallApplications = () => {
     });
     return formattedDate;
   };
-  useEffect(() => { if (typeof document !== 'undefined') {
-    checkTokenExpiration();
-    const loadData = async () => {
-      try {
-        const data = await fetchData_application();
-        if (data) {
-          setIsLoading(false);
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      checkTokenExpiration();
+      const loadData = async () => {
+        try {
+          const data = await fetchData_application();
+          if (data) {
+            setIsLoading(false);
+          }
+          const filteredJobApplications = data.filter(
+            (jobApplication) =>
+              jobApplication.status !== "deleted" &&
+              jobApplication.ApprovalStatus !== "rejected" &&
+              jobApplication.ApprovalStatus !== "accepted"
+          );
+          SetApp_Data(filteredJobApplications);
+          setApplications(filteredJobApplications);
+        } catch (error) {
+          // Handle the error appropriately
+          console.error("Error loading data:", error);
         }
-        const filteredJobApplications = data.filter(
-          (jobApplication) => jobApplication.status !== "deleted"
-        );
-        SetApp_Data(filteredJobApplications)
-        setApplications(filteredJobApplications);
+      };
 
-      } catch (error) {
-        // Handle the error appropriately
-        console.error("Error loading data:", error);
-      }
-    };
-
-    loadData();}
+      loadData();
+    }
   }, []);
   const deleteApplication = async (applicationId, path) => {
     await deleteData_application(applicationId, path);
@@ -127,6 +128,22 @@ const ViewallApplications = () => {
       (app) => app._id !== applicationId
     );
     setApplications(updatedApplications);
+  };
+
+  const AcceptApplication = async (applicationId, email) => {
+    router.push(
+      `/dashboard/sendmail?applicationId=${applicationId}&email=${email}`
+    );
+  };
+  const RejectApplication = async (applicationId, email) => {
+    await Request_To_Reject_application(applicationId, email);
+    toast.success("Application rejected successfully");
+    // After deletion, refresh the list of applications
+    const updatedApplications = applications.filter(
+      (app) => app._id !== applicationId
+    );
+
+    SetApp_Data(updatedApplications);
   };
 
   const openModal = (content, contentType) => {
@@ -148,198 +165,328 @@ const ViewallApplications = () => {
       },
     },
   });
-  return (
-    <div className="pt-5" >
-      {isValidToken === true ? (
-       <div>
-      
-          <div>
-           <BaseLayout>
+  const handleCheckboxChange = (value,id) => {
     
-       <ChakraProvider theme={theme} >
-         <Box p={8} >
-           <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
-             <Input
-               placeholder="Search position..."
-               mb={4}
-               value={searchInput}
-               onChange={(e) => setSearchInput(e.target.value)}
-             />
-           </div>
-           <div className="pt-5 pb-10 flex gap-2">
-            <BiFilter size={30}/>
-            <AppFilters
-        applications={applications}
-        SetApp_Data={SetApp_Data}
-        isLoading={setIsLoading}
-      />
-</div>
-{isLoading ? (
-        <div className="w-full h-[80vh]  flex justify-center items-center">
-        <div className="filterloading "></div>
-       </div>
-        ) : (
-          <div className="overflow-auto w-[60%] ">
-          <TableContainer >
-             <Table  >
-               <Thead className="bg-[#FFC83D]  border" style={{ borderRadius: "20px" }} >
-                 <Tr>
-                   {headers.map((header, index) => (
-                     <Th className="text-xm" key={index}>
-                       {header}
-                     </Th>
-                   ))}
-                 </Tr>
-               </Thead>
-               <Tbody>
-                 {(searchInput
-                   ? App_Data != null
-                     ? App_Data.filter(
-                         (app) =>
-                           app.jobpostApp[0]?.jobTitle &&
-                           app.jobpostApp[0]?.jobTitle
-                             .toLowerCase()
-                             .includes(searchInput.toLowerCase())
-                       )
-                     : []
-                   : App_Data != null
-                   ? App_Data
-                   : []
-                 ).map((data, id) => (
-                      <Tr key={id} className="border">
-                           <Td >
-                          <Menu>
-                            <IconButton
-                              as={MenuButton}
-                              aria-label="Options"
-                              icon={<RxDropdownMenu size={25} />}
-                       
-                              variant="unstyled"
-                              _focus={{ outline: "none" }}
-
-                            />
-                            <MenuList>
-                              <MenuItem>
-                                <Link href={`${data.cv}`} passHref>
-                                  <Icon as={DownloadIcon} w={5} h={5} mr={2} />
-                                  Download
-                                </Link>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={() =>
-                                  deleteApplication(data._id, data.cv)
-                                }
-                              >
-                                <Icon
-                                  color="red"
-                                  as={DeleteIcon}
-                                  w={5}
-                                  h={5}
-                                  mr={2}
-                                />
-                                Delete
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
-                        </Td>
-                        <Td >{data.fullName}</Td>
-                        <Td >
-                          {data.email.length > 10 ? (
-                            <>
-                              {expandedEmailId === data._id ? (
-                                data.email
-                              ) : (
-                                <>
-                                  {`${data.email.substring(0, 10)}...`}
-                                  <button
-                                    onClick={() =>
-                                      openModal(data.email, "email")
-                                    }
-                                    className="text-amber-400 ml-2 "
-                                  >
-                                    View Full
-                                  </button>
-                                </>
-                              )}
-                            </>
-                          ) : (
-                            data.email
-                          )}
-                        </Td>
-                        <Td >{data.phone}</Td>
-                        <Td >
-                          {data.jobpostApp[0] ? (
-                            <div>{data.jobpostApp[0].jobTitle}</div>
-                          ) : (
-                            "Post deleted....."
-                          )}
-                        </Td>
-                        <Td >{data.address}</Td>
-                        <Td >{data.selectedDepartment}</Td>
-
-                        <Td>
-                          <div className="flex items-center">
-                            {data.qualification.length > 2 ? (
-                              <>
-                                {expandedEmailId === data._id ? (
-                                  data.qualification
-                                ) : (
-                                  <>
-                                    {`${data.qualification.substring(0, 2)}...`}
-                                    <button
-                                      onClick={() =>
-                                        openModal(
-                                          data.qualification,
-                                          "qualification"
-                                        )
-                                      }
-                                      className="text-amber-400 ml-2 "
-                                    >
-                                      View Full
-                                    </button>
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              data.qualification
-                            )}
-                          </div>
-                        </Td>
-                      <Td>
-                        {data.experience}
-                      </Td>
-                      <Td>
-                        {data.experiencerange[0]} to {data.experiencerange[1]}
-                      </Td>
-                      <Td>
-                        {data.countryorregion}
-                      </Td>
-                      <Td>
-                        {data.city}
-                      </Td>
-                      <Td>
-                        {data.stateorprovince}
-                      </Td>
-                      <Td>
-                        {data.zipcode}
-                      </Td>
-                      <Td>
-                        {formatCreatedAt(data.createdAt)}
-                      </Td>
-                      </Tr>
-                 ))}
-                 </Tbody>
-               </Table>
-             </TableContainer> 
-
-          </div>    )}
-           </Box>
-         </ChakraProvider>
+    if (selectedRows.includes(id)) {
+      setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
+    } else {
+      setSelectedRows([...selectedRows, id]);
+    }
+  };
+  const handleSelectAll = (value, data) => {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = value;
+     
+    });
+    if (value) {
       
-       </BaseLayout>
+      setSelectedRows(data.map((row) => row._id));
+    } else {
+      setSelectedRows([]);
+    }
+  };
+  const delete_selected_app = async () => {
+    selectedRows.forEach(async (rowId) => {
+      await deleteData_application(rowId);
+      const updatedApplications = applications.filter(
+        (app) => app._id !== rowId
+      );
+      SetApp_Data(updatedApplications);
+    });
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    setSelectedRows([]);
+  }
+  const reject_selected_app = async () => {
+    selectedRows.forEach(async (rowId) => {
+     const response = await Request_To_Reject_application(rowId, "email");
+
+   
+      const updatedApplications =  applications.filter(
+        (app) => app._id !== rowId
+      );
+      toast.success("Application rejected successfully");
+      SetApp_Data(updatedApplications);
+    });
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    setSelectedRows([]);
+  }
+
+  return (
+    <div className="pt-5">
+      {isValidToken === true ? (
+        <div>
+          <div>
+            <BaseLayout>
+              <ChakraProvider theme={theme}>
+                <Box p={8}>
+                  <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
+                    <Input
+                      placeholder="Search position..."
+                      mb={4}
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="pt-5 pb-10 flex gap-2">
+                    <BiFilter size={30} />
+                    <AppFilters
+                      applications={applications}
+                      SetApp_Data={SetApp_Data}
+                      isLoading={setIsLoading}
+                    />
+                  </div>
+                  {isLoading ? (
+                    <div className="w-full h-[80vh]  flex justify-center items-center">
+                      <div className="filterloading "></div>
+                    </div>
+                  ) : (
+                    <div className="overflow-auto w-[60%] ">
+                      {selectedRows.length > 0 && (
+                       <div className="flex gap-5 mb-2">
+                    <input type="checkbox"
+                       
+                                  onChange={(e) => handleSelectAll(e.target.checked, App_Data)}
+                                /> <span className="">Select All</span>
+                                   <button onClick={reject_selected_app}> 
+                                    {/* <button > */}
+                                   <Icon 
+                                          color="red"
+                                          as={FcCancel}
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                   </button>
+                                   <button onClick={delete_selected_app}>
+                                   <Icon
+                                          color="red"
+                                          as={DeleteIcon}
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                   </button>
+                       </div>  )}
+                      <TableContainer>
+                        <Table>
+                          <Thead
+                            className="bg-[#FFC83D]  border"
+                            style={{ borderRadius: "20px" }}
+                          >
+                            
+                            <Tr>
+                              {headers.map((header, index) => (
+                                <Th className="text-xm" key={index}>
+                                  {header}
+                                </Th>
+                              ))}
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                            {(searchInput
+                              ? App_Data != null
+                                ? App_Data.filter(
+                                    (app) =>
+                                      app.jobpostApp[0]?.jobTitle &&
+                                      app.jobpostApp[0]?.jobTitle
+                                        .toLowerCase()
+                                        .includes(searchInput.toLowerCase())
+                                  )
+                                : []
+                              : App_Data != null
+                              ? App_Data
+                              : []
+                            ).map((data, id) => (
+                              <Tr key={data.id} className="border">
+                                <Td>
+                              <input type="checkbox"
+  onChange={(e) => handleCheckboxChange(e.target.checked, data._id)}
+/>
+                                </Td>
+                                <Td>
+                                  <Menu>
+                                    <IconButton
+                                      as={MenuButton}
+                                      aria-label="Options"
+                                      icon={<RxDropdownMenu size={25} />}
+                                      variant="unstyled"
+                                      _focus={{ outline: "none" }}
+                                    />
+                                    <MenuList>
+                                      <MenuItem>
+                                        <Link href={`${data.cv}`} passHref>
+                                          <Icon
+                                            as={DownloadIcon}
+                                            w={5}
+                                            h={5}
+                                            mr={2}
+                                          />
+                                          Download
+                                        </Link>
+                                      </MenuItem>
+                                      <MenuItem
+                                        onClick={() =>
+                                          deleteApplication(data._id, data.cv)
+                                        }
+                                      >
+                                        <Icon
+                                          color="red"
+                                          as={DeleteIcon}
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Delete
+                                      </MenuItem>
+                                      <MenuItem
+                                        onClick={() =>
+                                          AcceptApplication(
+                                            data._id,
+                                            data.email
+                                          )
+                                        }
+                                      >
+                                        <Icon
+                                          color="red"
+                                          as={FcOk}
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Accept Application
+                                      </MenuItem>
+                                      <MenuItem
+                                        onClick={() =>
+                                          RejectApplication(
+                                            data._id,
+                                            data.email
+                                          )
+                                        }
+                                      >
+                                        <Icon
+                                          color="red"
+                                          as={FcCancel}
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Reject Application
+                                      </MenuItem>
+                                      <MenuItem
+                                        onClick={() =>
+                                          RejectApplication_With_Message(
+                                            data._id,
+                                            data.email
+                                          )
+                                        }
+                                      >
+                                        <Icon
+                                          color="red"
+                                          as={FcCancel}
+                                          w={5}
+                                          h={5}
+                                          mr={2}
+                                        />
+                                        Reject Application With Message
+                                      </MenuItem>
+                                    </MenuList>
+                                  </Menu>
+                                </Td>
+                                <Td>{data.fullName}</Td>
+                                <Td>
+                                  {data.email.length > 10 ? (
+                                    <>
+                                      {expandedEmailId === data._id ? (
+                                        data.email
+                                      ) : (
+                                        <>
+                                          {`${data.email.substring(0, 10)}...`}
+                                          <button
+                                            onClick={() =>
+                                              openModal(data.email, "email")
+                                            }
+                                            className="text-amber-400 ml-2 "
+                                          >
+                                            View Full
+                                          </button>
+                                        </>
+                                      )}
+                                    </>
+                                  ) : (
+                                    data.email
+                                  )}
+                                </Td>
+                                <Td>{data.phone}</Td>
+                                <Td>
+                                  {data.jobpostApp[0] ? (
+                                    <div>{data.jobpostApp[0].jobTitle}</div>
+                                  ) : (
+                                    "Post deleted....."
+                                  )}
+                                </Td>
+                                <Td>{data.address}</Td>
+                                <Td>{data.selectedDepartment}</Td>
+
+                                <Td>
+                                  <div className="flex items-center">
+                                    {data.qualification.length > 2 ? (
+                                      <>
+                                        {expandedEmailId === data._id ? (
+                                          data.qualification
+                                        ) : (
+                                          <>
+                                            {`${data.qualification.substring(
+                                              0,
+                                              2
+                                            )}...`}
+                                            <button
+                                              onClick={() =>
+                                                openModal(
+                                                  data.qualification,
+                                                  "qualification"
+                                                )
+                                              }
+                                              className="text-amber-400 ml-2 "
+                                            >
+                                              View Full
+                                            </button>
+                                          </>
+                                        )}
+                                      </>
+                                    ) : (
+                                      data.qualification
+                                    )}
+                                  </div>
+                                </Td>
+                                <Td>{data.experience}</Td>
+                                <Td>
+                                  {data.experiencerange[0]} to{" "}
+                                  {data.experiencerange[1]}
+                                </Td>
+                                <Td>{data.countryorregion}</Td>
+                                <Td>{data.city}</Td>
+                                <Td>{data.stateorprovince}</Td>
+                                <Td>{data.zipcode}</Td>
+                                <Td>{formatCreatedAt(data.createdAt)}</Td>
+                              </Tr>
+                            ))}
+                          </Tbody>
+                        </Table>
+                      </TableContainer>
+                    </div>
+                  )}
+                </Box>
+              </ChakraProvider>
+            </BaseLayout>
           </div>
-       
-       </div>
+        </div>
       ) : (
         <p>session expired</p>
       )}
@@ -374,10 +521,14 @@ const ViewallApplications = () => {
             {modalContent}
           </p>
         </div>
-        <button className="bg-amber-400 py-3 px-10 rounded" onClick={closeModal}>
+        <button
+          className="bg-amber-400 py-3 px-10 rounded"
+          onClick={closeModal}
+        >
           Close
         </button>
       </ReactModal>
+      <ToastContainer />
     </div>
   );
 };

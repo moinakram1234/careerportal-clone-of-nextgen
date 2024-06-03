@@ -95,6 +95,37 @@ export const deleteJobPost = async (_id) => {
     return false; // Indicate deletion failure
   }
 };
+
+
+export const sendmail_to_applicant = async (message) => {
+ try {
+  alert(message._id);
+  // Fetch the list of candidates for the job post from the server
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP}/application/sendmail`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: message })
+  });
+  // Rest of the code...
+
+if (response.ok) {
+      return "sent email successfully";
+    }
+  
+    else {
+      // If there's an error in sending notifications, log the error and return false
+      console.error("Error sending notifications:", response.statusText);
+      return false;
+    }
+  } catch (error) {
+    // If there's an error in the fetch operation itself, log the error and return false
+    console.error("Error sending notifications:", error);
+    return false;
+  }
+};
+
 export const notify_to_users = async (_id) => {
   try {
     // Fetch the list of candidates for the job post from the server
@@ -271,7 +302,30 @@ export const updateEnableStatus = async (_id, enablestatus) => {
   }
 };
 
+// reject application without any message
+export const Request_To_Reject_application = async (_id, email) => {
+  try {
+   
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP}/reject?_id=${_id}&email=${email}`, {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+
+    if (response.ok) {
+      return "Application rejected successfully";
+    } else {
+      console.error("Error rejecting application:", response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error rejecting application:", error);
+    return false;
+  }
+}
 //retore application and job posts
+
 
 export const updateRestore = async (_id) => {
   try {
@@ -290,5 +344,7 @@ export const updateRestore = async (_id) => {
     throw error;
   }
 };
+
+
 
 export { createJobPost, fetchJobPosts, updateJobPost, createJobapplication };

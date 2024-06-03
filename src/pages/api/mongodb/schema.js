@@ -65,6 +65,7 @@ if (mongoose.models && mongoose.models.JobApplication) {
       address: String,
       postid: String,
       status: String,
+     ApprovalStatus: String,
       createdAt: createdAtOptions,
   });
 
