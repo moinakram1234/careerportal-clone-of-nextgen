@@ -1,0 +1,485 @@
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+  }
+  .card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 500px;
+  }
+  
+  .card h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .card p {
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .card img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+.mtoimage{
+    background-color: #000000;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Cg %3E%3Cpolygon fill='%23220000' points='1600 160 0 460 0 350 1600 50'/%3E%3Cpolygon fill='%23440000' points='1600 260 0 560 0 450 1600 150'/%3E%3Cpolygon fill='%23660000' points='1600 360 0 660 0 550 1600 250'/%3E%3Cpolygon fill='%23880000' points='1600 460 0 760 0 650 1600 350'/%3E%3Cpolygon fill='%23A00' points='1600 800 0 800 0 750 1600 450'/%3E%3C/g%3E%3C/svg%3E");
+    background-attachment: fixed;
+    background-size: cover;
+
+}
+.fullPageImage {
+  background-image: url("/images/aboutbg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+  animation: zoomout 10s infinite;
+}
+
+@keyframes zoomout {
+  0% {
+    background-size: 100%;
+  }
+  100% {
+    background-size: 110%;
+  }
+}
+.animatefadeslideup {
+  animation: fadeInSlideUp 4s ease-out;
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.mtobg{
+    background-color: #2F2EA6;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+
+}
+/* Add the following to your styles.css or create a new file named styles.css and add this content */
+.rotatelogo {
+  animation: rotation 10s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+.loading {
+  animation: rotation 3s infinite linear;
+
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0.9);
+      box-shadow: 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+    100% {
+      transform: scale(0.9);
+      box-shadow: 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+  }
+  .applynowbutton {
+    background-color: #192535;
+    color: #fff;
+    border: 1px solid  red;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .applynowbutton:hover {
+    background-color: #948753;
+  }
+  
+  .applynowbutton svg {
+    font-size: 20px;
+    margin-left: 10px;
+  }
+  .blink {
+    animation: moveUpDown 1s steps(1, end) infinite;
+  }
+  @keyframes moveUpDown {
+    0%, 100% { 
+      transform: translateY(0); 
+    }
+    50% { 
+      transform: translateY(10px); 
+    }
+  }
+  .zigzag {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 5% 90%, 15% 80%, 25% 90%, 35% 80%, 45% 90%, 55% 80%, 65% 90%, 75% 80%, 85% 90%, 95% 80%);
+  }
+.fullImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+
+.drop {
+  background: orange;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.zigzag {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    5% 90%,
+    15% 80%,
+    25% 90%,
+    35% 80%,
+    45% 90%,
+    55% 80%,
+    65% 90%,
+    75% 80%,
+    85% 90%,
+    95% 80%
+  );
+}
+.fullImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #f0f0f0; /* Background color */
+}
+
+.logoContainer {
+  
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #2f2ea6;
+}
+
+.logo {
+  width: 150px; /* Adjust the size as needed */
+  height: auto;
+}
+
+.progressBar {
+  width: 80%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress {
+  height: 100%;
+  background-color: #2f2ea6;
+}
+
+.progressText {
+  font-size: 18px;
+  font-weight: bold;
+}
+/* Ensure the parent container has a relative position */
+.parentcontainer {
+  position: relative;
+}
+
+/* Content that should appear above the shapes */
+.overlappingcontent {
+  position: relative;
+  z-index: 20; /* Higher than the shapes */
+}
+
+/* Add this CSS to your global stylesheet or within a module CSS file */
+.footercontainer {
+  position: relative;
+  overflow: hidden;
+}
+
+.footerbackground {
+  position: absolute;
+  inset: 0 0 auto 0;
+  background-color: #F6D829;
+  z-index: 99;
+  height: 0;
+  overflow: hidden;
+}
+.scrollBackground {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.blueSection {
+  background-color: blue;
+  height: 100vh;
+  width: 100%;
+}
+
+.yellowBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: yellow;
+  z-index: -1;
+}
+/* Loader CSS */
+
+.video {
+ 
+
+  width: 100%; /* These two lines ensure the video stretches to cover the full screen */
+
+   /* Optional: ensures the video stays in the background */
+  background-size: cover;
+}
+.loaderparentdiv{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+background-color: #29219b;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+.loader::before , .loader::after{
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50% , -50%);
+  width: 48em;
+  height: 48em;
+  background-image:
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0),
+    radial-gradient(circle 10px, #FFF 100%, transparent 0);
+  background-position: 0em -18em, 0em 18em, 18em 0em, -18em 0em,
+                       13em -13em, -13em -13em, 13em 13em, -13em 13em;
+    background-repeat: no-repeat;
+  font-size: 0.5px;
+  border-radius: 50%;
+  animation: blast 1s ease-in infinite;
+}
+.loader::after {
+  font-size: 1px;
+  background: #fff;
+  animation: bounce 1s ease-in infinite;
+}
+
+@keyframes bounce {
+  0% , 100%{ font-size: 0.75px }
+  50% { font-size: 1.5px }
+}
+@keyframes blast {
+  0% , 40% {
+    font-size: 0.5px;
+  }
+  70% {
+    opacity: 1;
+    font-size: 4px;
+  }
+   100% {
+     font-size: 6px;
+    opacity: 0;
+  }
+}
+.line {
+  width: 100%;
+  max-width: 800px;
+  height: 8px;
+  margin: 0 0 10px 0;
+  position: relative;
+  display: inline-block;
+  background-color: rgba(255,255,255,1);
+}
+
+
+
+
+.buttonBlink {
+  background-color: #004A7F;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Arial;
+  font-size: 20px;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  -webkit-animation: glowing 1500ms infinite;
+  -moz-animation: glowing 1500ms infinite;
+  -o-animation: glowing 1500ms infinite;
+  animation: glowing 1500ms infinite;
+}
+@-webkit-keyframes glowing {
+  0% { background-color: #2F2EA6; -webkit-box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; -webkit-box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; -webkit-box-shadow: 0 0 3px #2F2EA6; }
+}
+
+@-moz-keyframes glowing {
+  0% { background-color: #2F2EA6; -moz-box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; -moz-box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; -moz-box-shadow: 0 0 3px #2F2EA6; }
+}
+
+@-o-keyframes glowing {
+  0% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+}
+
+@keyframes glowing {
+  0% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+}
+
+
+.orangeWrapper {
+  padding: 0;
+}
+.divbody {
+  height: 300vh;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background-color: #f5f5f5;
+}
+
+.trigger {
+  position: absolute;
+
+  left: 0;
+  width: 100vw;
+  height: 80vh;
+  border-top: solid 2px orange;
+  padding: 20px;
+}
+
+.box {
+  width: 10vw;
+  height: 10vw;
+  background: blue;
+}
+/* components/OverlaySection.module.css */
+.container {
+  position: relative;
+  height: 100vh; /* Extend the height to allow scrolling */
+}
+.firstDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f6d729;
+  z-index: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.secondDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background-color: #2f2ea6;
+  z-index: 0;
+  /* transition: height 3s ease; Optional: Adds a smooth transition effect */
+  mix-blend-mode: normal;
+}
+
+
+
+.textready{
+  line-height: 2; /* Adjust line height for space between lines */
+}

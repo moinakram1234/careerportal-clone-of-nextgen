@@ -1,5 +1,5 @@
 // schema.js
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
@@ -8,13 +8,11 @@ const createdAtOptions = {
   default: Date.now,
 };
 
-let JobPost;
-let JobApplication;
 let User;
-let Otp;
+let JobPost;
 
 if (mongoose.models && mongoose.models.JobPost) {
-  JobPost = mongoose.model('JobPost');
+  JobPost = mongoose.model("JobPost");
 } else {
   const jobPostSchema = new Schema({
     jobTitle: {
@@ -36,44 +34,10 @@ if (mongoose.models && mongoose.models.JobPost) {
     createdAt: createdAtOptions,
   });
 
-  JobPost = mongoose.model('JobPost', jobPostSchema);
+  JobPost = mongoose.model("JobPost", jobPostSchema);
 }
-
-if (mongoose.models && mongoose.models.JobApplication) {
-  JobApplication = mongoose.model('JobApplication');
-} else {
-  const jobApplicationSchema = new Schema({
-      fullName: {
-        type: String,
-        required: true,
-      },
-      phone: String,
-      email: {
-        type: String,
-        unique: true,
-        required: true,
-      },
-      qualification: String,
-      selectedDepartment: String,
-      experience: String,
-      experiencerange: [Number],
-      cv: String,
-      countryorregion: String,
-      city: String,
-      stateorprovince: String,
-      zipcode: String,
-      address: String,
-      postid: String,
-      status: String,
-     ApprovalStatus: String,
-      createdAt: createdAtOptions,
-  });
-
-  JobApplication = mongoose.model('JobApplication', jobApplicationSchema);
-}
-
 if (mongoose.models && mongoose.models.User) {
-  User = mongoose.model('User');
+  User = mongoose.model("User");
 } else {
   const userSchema = new Schema({
     email: {
@@ -93,29 +57,78 @@ if (mongoose.models && mongoose.models.User) {
       type: Boolean,
       default: false,
     },
-    createdAt: createdAtOptions,
-  });
-
-  User = mongoose.model('User', userSchema);
-}
-
-if (mongoose.models && mongoose.models.Otp) {
-  Otp = mongoose.model('Otp');
-} else {
-  const otpSchema = new Schema({
-    email: {
+    // Add createdAt and updatedAt timestamps
+    CNIC: {
       type: String,
-      unique: true,
       required: true,
     },
-    otp: {
+    Phone: {
       type: String,
       required: true,
     },
     createdAt: createdAtOptions,
   });
 
-  Otp = mongoose.model('Otp', otpSchema);
+  User = mongoose.model("User", userSchema);
 }
+const FormDataSchema = new mongoose.Schema({
+  accessibility: {
+    disability: String,
+    specialAssistance: String,
+  },
+  personalInfo: {
+    name: String,
+    gender: String,
+    dob: Date,
+    email: String,
+    mobile: String,
+    cnic: String,
+    city: String,
+    languages: [String],
+    permanentaddress: String,
+    currentaddress: String,
+    instagramhandle: String,
+    linkedinhandle: String,
+    areyoucontentcreator: String,
+  },
+  education: [
+    {
+      DegreeName: String,
+      InstituteName: String,
+      DegreeLevel: String,
+      DegreeSpecialization: [String],
+      Graduation_year: Number,
 
-export { JobPost, JobApplication, User, Otp };
+      CGPA: Number,
+
+      Outof: Number,
+    },
+  ],
+  internshipPreference: {
+    preferredFunction: String,
+    location: String,
+  },
+  hasWorkExperience: String,
+  appstatus: { type: String, default: "inprogress" },
+  user_email: { type: String, required: true },
+  workExperience: [
+    {
+      PositionHeld: String,
+      OrganizationName: String,
+      FromDate: Date,
+      ToDate: Date,
+      PresentlyWorking: Boolean,
+    },
+  ],
+  cv: String,
+  postid: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const FormData =
+  mongoose.models.FormData || mongoose.model("FormData", FormDataSchema);
+
+export { User, FormData, JobPost };

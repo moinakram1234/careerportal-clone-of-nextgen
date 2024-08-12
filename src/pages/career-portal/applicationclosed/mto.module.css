@@ -1,0 +1,60 @@
+
+
+.buttonBlink {
+  background-color: #004A7F;
+ 
+ 
+
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Arial;
+  font-size: 20px;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  -webkit-animation: glowing 1500ms infinite;
+  -moz-animation: glowing 1500ms infinite;
+  -o-animation: glowing 1500ms infinite;
+  animation: glowing 1500ms infinite;
+}
+@-webkit-keyframes glowing {
+  0% { background-color: #2F2EA6; -webkit-box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; -webkit-box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; -webkit-box-shadow: 0 0 3px #2F2EA6; }
+}
+
+@-moz-keyframes glowing {
+  0% { background-color: #2F2EA6; -moz-box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; -moz-box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; -moz-box-shadow: 0 0 3px #2F2EA6; }
+}
+
+@-o-keyframes glowing {
+  0% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+}
+
+@keyframes glowing {
+  0% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+  50% { background-color: #ffcc00; color: #000000; box-shadow: 0 0 40px #ffcc00; color: #000000; }
+  100% { background-color: #2F2EA6; box-shadow: 0 0 3px #2F2EA6; }
+}
+.blink {
+  animation: moveUpDown 1s steps(1, end) infinite;
+}
+@keyframes moveUpDown {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(10px); 
+  }
+}
+.zigzag {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 5% 90%, 15% 80%, 25% 90%, 35% 80%, 45% 90%, 55% 80%, 65% 90%, 75% 80%, 85% 90%, 95% 80%);
+}
+.logo{
+  filter: drop-shadow(5px 5px 5px #000000);
+}

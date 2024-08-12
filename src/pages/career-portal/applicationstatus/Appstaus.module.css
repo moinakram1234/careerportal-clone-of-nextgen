@@ -1,0 +1,53 @@
+.educationcard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.cardheader {
+  background-color:#2F2EA6;
+  color: #fff;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 18px;
+}
+
+.cardheader svg {
+  flex-shrink: 0;
+
+}
+
+.cardbody {
+  padding: 15px;
+}
+
+.cardrow {
+  margin-bottom: 10px;
+  background: rgb(223, 221, 221);
+  border-radius: 5px;
+  padding: 3px;
+  padding-left: 10px;
+  justify-content: space-between;
+  display: flex;
+}
+
+.carddata {
+
+  color: rgb(58, 53, 53);
+}
+
+.cardrow strong {
+  color: black;
+}
+
+.circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: absolute;
+}

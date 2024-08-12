@@ -110,8 +110,10 @@ export default function JobsCard() {
     return formattedDate;
   };
   const handleApp = (postId) => {
-    // Push the post ID to the path "postdetails"
-    router.push(`/jobdetails?postid=${postId}`);
+    // Store the post ID in localStorage
+    localStorage.setItem('postId', postId);
+    // Navigate to the login page
+    router.push('/login');
   };
 
   const handleJobTypeChange = (event) => {

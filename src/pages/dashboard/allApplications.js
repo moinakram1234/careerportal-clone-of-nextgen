@@ -1,58 +1,54 @@
-import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { RxDropdownMenu } from "react-icons/rx";
+// pages/index.js
+
+import BaseLayout from "@/admincomponents/BaseLayout";
+import { useEffect, useState } from "react";
+import { FaUser } from "react-icons/fa";
+import styles from "./nextgen.module.css";
+import * as XLSX from "xlsx";
 import {
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/table";
+  MdCastForEducation,
+  MdOutlineRefresh,
+  MdPerson,
+  MdRoomPreferences,
+  MdSchool,
+  MdWork,
+} from "react-icons/md";
+import { LuLassoSelect } from "react-icons/lu";
 import {
-  Box,
-  Input,
-  ChakraProvider,
-  extendTheme,
+  Icon,
+  IconButton,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Icon,
-  IconButton,
-  Checkbox,
 } from "@chakra-ui/react";
-import BaseLayout from "@/admincomponents/BaseLayout";
-import {
-  Request_To_Reject_application,
-  deleteData_application,
-  fetchData_application,
-} from "@/server_requests/client_requests";
+import { RxDropdownMenu } from "react-icons/rx";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { isTokenExpired } from "@/components/tokenUtils";
-import parseJwt from "@/components/parsetoken";
-import ReactModal from "react-modal"; // Import the react-modal library
-import headers from "@/Data/Applicationheader";
 import { DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
-import { BiFilter } from "react-icons/bi";
-import AppFilters from "@/admincomponents/admindashbord/app_filters";
 import { FcCancel, FcOk } from "react-icons/fc";
+import {
+  Request_To_accept_nextgen_application,
+  Request_To_Reject_nextgen_application,
+} from "@/server_requests/client_requests";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/router";
 
-const ViewallApplications = () => {
-  const [applications, setApplications] = useState(null);
-  const [App_Data, SetApp_Data] = useState(null);
-  const [isValidToken, setIsValidToken] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalContent, setModalContent] = useState("");
-  const [modalContentType, setModalContentType] = useState("");
-  const [expandedEmailId, setExpandedEmailId] = useState(null);
-  const [searchInput, setSearchInput] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+import parseJwt from "@/components/parsetoken";
+import { isTokenExpired } from "@/components/tokenUtils";
+export default function Home() {
+  const [data, setData] = useState(null);
+  const [filteredData, setFilteredData] = useState(null);
+  const [searchId, setSearchId] = useState("");
+  const [loading, setloading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [downloadloading, setdownloadloading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const [isValidToken, setIsValidToken] = useState(false);
+  const [totalPages, setTotalPages] = useState(1); // State for total pages
+  const router = useRouter();
+
   const redirectToHome = () => router.push("/");
   const checkTokenExpiration = async () => {
     const token = localStorage.getItem("token");
@@ -86,87 +82,63 @@ const ViewallApplications = () => {
       setIsValidToken(true);
     }
   };
-  const formatCreatedAt = (createdAt) => {
-    const date = new Date(createdAt);
-    const formattedDate = date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    return formattedDate;
-  };
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      checkTokenExpiration();
-      const loadData = async () => {
-        try {
-          const data = await fetchData_application();
-          if (data) {
-            setIsLoading(false);
-          }
-          const filteredJobApplications = data.filter(
-            (jobApplication) =>
-              jobApplication.status !== "deleted" &&
-              jobApplication.ApprovalStatus !== "rejected" &&
-              jobApplication.ApprovalStatus !== "accepted"
-          );
-          SetApp_Data(filteredJobApplications);
-          setApplications(filteredJobApplications);
-        } catch (error) {
-          // Handle the error appropriately
-          console.error("Error loading data:", error);
-        }
-      };
 
-      loadData();
-    }
-  }, []);
-  const deleteApplication = async (applicationId, path) => {
-    await deleteData_application(applicationId, path);
+  const fetchData = (page) => {
+    setloading(true);
+    fetch(`/api/nextgen?page=${page}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && Array.isArray(data.data)) {
+          // Ensure data.data is an array
+          const filteredData = data.data.filter(
+            (item) =>
+              item.appstatus !== "rejected" && item.appstatus !== "accepted"
+          );
+          setloading(true);
+          setData(filteredData);
+          setFilteredData(filteredData);
+          setTotalPages(data.totalPages); // Set the total pages from the response
+          setloading(false);
+          console.log(filteredData);
+        } else {
+          console.error("Expected an array but got:", typeof data);
+          // Handle the case where data is not an array, e.g., set an error state or log a message
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  useEffect( () => {
+     checkTokenExpiration();
+    fetchData(currentPage); // Fetch data for the current page
+  }, [currentPage]);
+  const RejectApplication = async (applicationId, email) => {
+    await Request_To_Reject_nextgen_application(applicationId, email);
+
+    toast.success("Application rejected successfully");
     // After deletion, refresh the list of applications
-    const updatedApplications = applications.filter(
-      (app) => app._id !== applicationId
-    );
-    setApplications(updatedApplications);
+    const updatedApplications = data.filter((app) => app._id !== applicationId);
+
+    setData(filteredData);
+    setFilteredData(filteredData);
   };
 
   const AcceptApplication = async (applicationId, email) => {
     router.push(
-      `/dashboard/sendmail?applicationId=${applicationId}&email=${email}`
+      `/dashboard/sendemailfornextgen?applicationId=${applicationId}&email=${email}`
     );
   };
-  const RejectApplication = async (applicationId, email) => {
-    await Request_To_Reject_application(applicationId, email);
-    toast.success("Application rejected successfully");
-    // After deletion, refresh the list of applications
-    const updatedApplications = applications.filter(
-      (app) => app._id !== applicationId
+
+  const rejectnextgenwithmailApplication = async (applicationId, email) => {
+    router.push(
+      `/dashboard/sendemailfornextgenrejection?applicationId=${applicationId}&email=${email}`
     );
-
-    SetApp_Data(updatedApplications);
   };
-
-  const openModal = (content, contentType) => {
-    setModalContent(content);
-    setModalContentType(contentType);
-    setModalIsOpen(true);
+  const handleSelectedApp = async (user) => {
+    setSelectedUser(user);
   };
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setModalContent("");
-    setModalContentType("");
-  };
-  const theme = extendTheme({
-    styles: {
-      global: {
-        body: {
-          bg: "white",
-        },
-      },
-    },
-  });
-  const handleCheckboxChange = (value,id) => {
-    
+  const handleCheckboxChange = (value, id) => {
     if (selectedRows.includes(id)) {
       setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
     } else {
@@ -177,359 +149,636 @@ const ViewallApplications = () => {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach((checkbox) => {
       checkbox.checked = value;
-     
     });
     if (value) {
-      
       setSelectedRows(data.map((row) => row._id));
     } else {
       setSelectedRows([]);
     }
   };
-  const delete_selected_app = async () => {
-    selectedRows.forEach(async (rowId) => {
-      await deleteData_application(rowId);
-      const updatedApplications = applications.filter(
-        (app) => app._id !== rowId
-      );
-      SetApp_Data(updatedApplications);
-    });
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach((checkbox) => {
-      checkbox.checked = false;
-    });
-    setSelectedRows([]);
-  }
   const reject_selected_app = async () => {
     selectedRows.forEach(async (rowId) => {
-     const response = await Request_To_Reject_application(rowId, "email");
+      const response = await Request_To_Reject_nextgen_application(
+        rowId,
+        "email"
+      );
 
-   
-      const updatedApplications =  applications.filter(
+      const updatedApplications = filteredData.filter(
         (app) => app._id !== rowId
       );
       toast.success("Application rejected successfully");
-      SetApp_Data(updatedApplications);
+      setFilteredData(updatedApplications);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     });
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach((checkbox) => {
       checkbox.checked = false;
     });
     setSelectedRows([]);
-  }
+  };
 
+  const accept_selected_app = async () => {
+    selectedRows.forEach(async (rowId) => {
+      const response = await Request_To_accept_nextgen_application(
+        rowId,
+        "email"
+      );
+
+      const updatedApplications = filteredData.filter(
+        (app) => app._id !== rowId
+      );
+      toast.success("Application accepted successfully");
+      setFilteredData(updatedApplications);
+    });
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    setSelectedRows([]);
+  };
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase(); // Convert input value to lower case
+
+    setSearchId(value);
+    const filtered = data.filter((user) =>
+      user._id.toLowerCase().includes(value)
+    ); // Convert user IDs to lower case before comparison
+    setFilteredData(filtered);
+  };
+
+  const downloadExcel = () => {
+    setdownloadloading(true)
+    fetch(`/api/nextgen?page=download`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          // Ensure data.data is an array
+          const filteredData = data.filter(
+            (item) =>
+              item.appstatus !== "rejected" && item.appstatus !== "accepted"
+          );
+          setdownloadloading(false);
+          const combinedData = filteredData.flatMap((user) => {
+            const personalInfo = {
+              _id: user._id,
+              Name: user.personalInfo.name,
+              Gender: user.personalInfo.gender,
+              DOB: new Date(user.personalInfo.dob).toLocaleDateString(),
+              Email: user.personalInfo.email,
+              Mobile: user.personalInfo.mobile,
+              CNIC: user.personalInfo.cnic,
+              City: user.personalInfo.city,
+              PermanentAddress: user.personalInfo.permanentaddress,
+              CurrentAddress: user.personalInfo.currentaddress,
+              LinkedInHandle: user.personalInfo.linkedinhandle,
+              Languages: user.personalInfo.languages.join(", "),
+            };
+            const Useremail = {
+              Login_Email: user.user_email,
+            };
+            const education = user.education.map((edu) => ({
+              DegreeName: edu.DegreeName,
+              InstituteName: edu.InstituteName,
+              DegreeSpecialization: edu.DegreeSpecialization.join(", "),
+              GraduationYear: edu.Graduation_year,
+              CGPA: edu.CGPA,
+            }));
+
+            const internshipPreference = {
+              PreferredFunction: Array.isArray(
+                user.internshipPreference?.preferredFunction
+              )
+                ? user.internshipPreference.preferredFunction.join(", ")
+                : user.internshipPreference?.preferredFunction ?? "Not specified",
+              Location:
+                user.internshipPreference?.location ?? "Location not specified",
+            };
+
+            const workExperience = user.workExperience.map((work) => ({
+              PositionHeld: work.PositionHeld,
+              OrganizationName: work.OrganizationName,
+              FromDate: new Date(work.FromDate).toLocaleDateString(),
+              ToDate: new Date(work.ToDate).toLocaleDateString(),
+              PresentlyWorking: work.PresentlyWorking ? "Yes" : "No",
+            }));
+
+            return education.map((edu) => ({
+              ...personalInfo,
+              ...Useremail,
+              ...edu,
+              ...internshipPreference,
+              ...workExperience,
+            }));
+          });
+
+          const workbook = XLSX.utils.book_new();
+          const combinedSheet = XLSX.utils.json_to_sheet(combinedData);
+          XLSX.utils.book_append_sheet(workbook, combinedSheet, "Combined Data");
+          XLSX.writeFile(workbook, "totalApplications.xlsx");
+        } else {
+          console.error("Expected an array but got:", typeof data);
+          // Handle the case where data is not an array, e.g., set an error state or log a message
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+
+
+
+  };
+
+  const downloadJson = () => {
+    const jsonData = data.map((user) => ({
+      _id: user._id,
+      personalInfo: user.personalInfo,
+      education: user.education,
+      internshipPreference: user.internshipPreference,
+      hasWorkExperience: user.hasWorkExperience,
+      appstatus: user.appstatus,
+      user_email: user.user_email,
+      workExperience: user.workExperience,
+      createdAt: user.createdAt,
+      __v: user.__v,
+    }));
+
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "applications.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
   return (
-    <div className="pt-5">
-      {isValidToken === true ? (
-        <div>
-          <div>
-            <BaseLayout>
-              <ChakraProvider theme={theme}>
-                <Box p={8}>
-                  <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
-                    <Input
-                      placeholder="Search position..."
-                      mb={4}
-                      value={searchInput}
-                      onChange={(e) => setSearchInput(e.target.value)}
-                    />
-                  </div>
-                  <div className="pt-5 pb-10 flex gap-2">
-                    <BiFilter size={30} />
-                    <AppFilters
-                      applications={applications}
-                      SetApp_Data={SetApp_Data}
-                      isLoading={setIsLoading}
-                    />
-                  </div>
-                  {isLoading ? (
-                    <div className="w-full h-[80vh]  flex justify-center items-center">
-                      <div className="filterloading "></div>
-                    </div>
-                  ) : (
-                    <div className="overflow-auto w-[60%] ">
-                      {selectedRows.length > 0 && (
-                       <div className="flex gap-5 mb-2">
-                    <input type="checkbox"
-                       
-                                  onChange={(e) => handleSelectAll(e.target.checked, App_Data)}
-                                /> <span className="">Select All</span>
-                                   <button onClick={reject_selected_app}> 
-                                    {/* <button > */}
-                                   <Icon 
-                                          color="red"
-                                          as={FcCancel}
-                                          w={5}
-                                          h={5}
-                                          mr={2}
-                                        />
-                                   </button>
-                                   <button onClick={delete_selected_app}>
-                                   <Icon
-                                          color="red"
-                                          as={DeleteIcon}
-                                          w={5}
-                                          h={5}
-                                          mr={2}
-                                        />
-                                   </button>
-                       </div>  )}
-                      <TableContainer>
-                        <Table>
-                          <Thead
-                            className="bg-[#FFC83D]  border"
-                            style={{ borderRadius: "20px" }}
-                          >
-                            
-                            <Tr>
-                              {headers.map((header, index) => (
-                                <Th className="text-xm" key={index}>
-                                  {header}
-                                </Th>
-                              ))}
-                            </Tr>
-                          </Thead>
-                          <Tbody>
-                            {(searchInput
-                              ? App_Data != null
-                                ? App_Data.filter(
-                                    (app) =>
-                                      app.jobpostApp[0]?.jobTitle &&
-                                      app.jobpostApp[0]?.jobTitle
-                                        .toLowerCase()
-                                        .includes(searchInput.toLowerCase())
-                                  )
-                                : []
-                              : App_Data != null
-                              ? App_Data
-                              : []
-                            ).map((data, id) => (
-                              <Tr key={data.id} className="border">
-                                <Td>
-                              <input type="checkbox"
-  onChange={(e) => handleCheckboxChange(e.target.checked, data._id)}
-/>
-                                </Td>
-                                <Td>
-                                  <Menu>
-                                    <IconButton
-                                      as={MenuButton}
-                                      aria-label="Options"
-                                      icon={<RxDropdownMenu size={25} />}
-                                      variant="unstyled"
-                                      _focus={{ outline: "none" }}
-                                    />
-                                    <MenuList>
-                                      <MenuItem>
-                                        <Link href={`${data.cv}`} passHref>
-                                          <Icon
-                                            as={DownloadIcon}
-                                            w={5}
-                                            h={5}
-                                            mr={2}
-                                          />
-                                          Download
-                                        </Link>
-                                      </MenuItem>
-                                      <MenuItem
-                                        onClick={() =>
-                                          deleteApplication(data._id, data.cv)
-                                        }
-                                      >
-                                        <Icon
-                                          color="red"
-                                          as={DeleteIcon}
-                                          w={5}
-                                          h={5}
-                                          mr={2}
-                                        />
-                                        Delete
-                                      </MenuItem>
-                                      <MenuItem
-                                        onClick={() =>
-                                          AcceptApplication(
-                                            data._id,
-                                            data.email
-                                          )
-                                        }
-                                      >
-                                        <Icon
-                                          color="red"
-                                          as={FcOk}
-                                          w={5}
-                                          h={5}
-                                          mr={2}
-                                        />
-                                        Accept Application
-                                      </MenuItem>
-                                      <MenuItem
-                                        onClick={() =>
-                                          RejectApplication(
-                                            data._id,
-                                            data.email
-                                          )
-                                        }
-                                      >
-                                        <Icon
-                                          color="red"
-                                          as={FcCancel}
-                                          w={5}
-                                          h={5}
-                                          mr={2}
-                                        />
-                                        Reject Application
-                                      </MenuItem>
-                                      <MenuItem
-                                        onClick={() =>
-                                          RejectApplication_With_Message(
-                                            data._id,
-                                            data.email
-                                          )
-                                        }
-                                      >
-                                        <Icon
-                                          color="red"
-                                          as={FcCancel}
-                                          w={5}
-                                          h={5}
-                                          mr={2}
-                                        />
-                                        Reject Application With Message
-                                      </MenuItem>
-                                    </MenuList>
-                                  </Menu>
-                                </Td>
-                                <Td>{data.fullName}</Td>
-                                <Td>
-                                  {data.email.length > 10 ? (
-                                    <>
-                                      {expandedEmailId === data._id ? (
-                                        data.email
-                                      ) : (
-                                        <>
-                                          {`${data.email.substring(0, 10)}...`}
-                                          <button
-                                            onClick={() =>
-                                              openModal(data.email, "email")
-                                            }
-                                            className="text-amber-400 ml-2 "
-                                          >
-                                            View Full
-                                          </button>
-                                        </>
-                                      )}
-                                    </>
-                                  ) : (
-                                    data.email
-                                  )}
-                                </Td>
-                                <Td>{data.phone}</Td>
-                                <Td>
-                                  {data.jobpostApp[0] ? (
-                                    <div>{data.jobpostApp[0].jobTitle}</div>
-                                  ) : (
-                                    "Post deleted....."
-                                  )}
-                                </Td>
-                                <Td>{data.address}</Td>
-                                <Td>{data.selectedDepartment}</Td>
-
-                                <Td>
-                                  <div className="flex items-center">
-                                    {data.qualification.length > 2 ? (
-                                      <>
-                                        {expandedEmailId === data._id ? (
-                                          data.qualification
-                                        ) : (
-                                          <>
-                                            {`${data.qualification.substring(
-                                              0,
-                                              2
-                                            )}...`}
-                                            <button
-                                              onClick={() =>
-                                                openModal(
-                                                  data.qualification,
-                                                  "qualification"
-                                                )
-                                              }
-                                              className="text-amber-400 ml-2 "
-                                            >
-                                              View Full
-                                            </button>
-                                          </>
-                                        )}
-                                      </>
-                                    ) : (
-                                      data.qualification
-                                    )}
-                                  </div>
-                                </Td>
-                                <Td>{data.experience}</Td>
-                                <Td>
-                                  {data.experiencerange[0]} to{" "}
-                                  {data.experiencerange[1]}
-                                </Td>
-                                <Td>{data.countryorregion}</Td>
-                                <Td>{data.city}</Td>
-                                <Td>{data.stateorprovince}</Td>
-                                <Td>{data.zipcode}</Td>
-                                <Td>{formatCreatedAt(data.createdAt)}</Td>
-                              </Tr>
-                            ))}
-                          </Tbody>
-                        </Table>
-                      </TableContainer>
-                    </div>
-                  )}
-                </Box>
-              </ChakraProvider>
-            </BaseLayout>
+    <BaseLayout>
+      <div>
+        <div className="container mx-auto p-4  ">
+          <div className="flex justify-center mt-4 ">
+            <h1
+              className={`${styles.headertext} text-2xl font-bold  text-[#ffcc00] mb-10`}
+            >
+          Haidri Beverages  Career Portal
+            </h1>
           </div>
+          {!selectedUser ? (
+            <div>
+              <div className="flex justify-between mb-5">
+                <input
+                  type="text"
+                  placeholder="Search by ID"
+                  value={searchId}
+                  onChange={handleSearch}
+                  className="py-0 px-2 border border-gray-300 w-72 rounded"
+                />
+                <div>
+                  <button
+                    className="p-1 bg-[#ffcc00] text-sm text-white rounded"
+                    onClick={downloadExcel}
+                  >   {downloadloading && (
+                    <div className="flex"><div className="animate-spin ">
+                      <MdOutlineRefresh /></div> Download Excel </div>
+                  )}
+                    {!downloadloading && (<div><DownloadIcon /> Download Excel </div>)}
+                  </button>
+                  <button
+                    onClick={downloadJson}
+                    className="p-1 bg-[#ffcc00] text-sm m-2 text-white rounded"
+                  >
+                    Download JSON
+                  </button>
+                </div>
+              </div>
+              <div>
+                {selectedRows.length > 0 && (
+                  <div className="flex gap-5 mb-2">
+                    <div>
+                      <input
+                        type="checkbox"
+                        onChange={(e) =>
+                          handleSelectAll(e.target.checked, filteredData)
+                        }
+                      />{" "}
+                      <span className="text-sm font-spartan mt-3">
+                        Select All
+                      </span>
+                    </div>
+                    <button
+                      onClick={reject_selected_app}
+                      className="bg-[#cab4b4] p-2 rounded-lg"
+                    >
+                      <div className="flex">
+                        <FcCancel color="red" size={15} mr={2} />
+                      </div>
+                    </button>
+                    <button
+                      onClick={accept_selected_app}
+                      className="bg-[#9bbca4] p-2 rounded-lg"
+                    >
+                      <div className="flex">
+                        <FcOk color="red" size={15} mr={2} />
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="flex justify-center bg-[#4F3F00] rounded-lg items-center h-[70vh]">
+                  <span class={`${styles.loader}`}></span>
+                </div>
+              ) : <div className="max-h-[calc(100vh-200px)]  overflow-y-auto">
+                {filteredData?.map((user, index) => (
+                  <div key={index} className="flex ">
+                    <input
+                      className="mt-3"
+                      type="checkbox"
+                      onChange={(e) =>
+                        handleCheckboxChange(e.target.checked, user._id)
+                      }
+                    />
+                    <div
+                      key={user._id}
+                      className="bg-white border-b-2 rounded p-2  mb-4 cursor-pointer"
+                      onClick={() => handleSelectedApp(user)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <FaUser className="text-[#ffcc00] mt-5" size={16} />
+                        <div className="grid mt-6 grid-cols-5 gap-4">
+                          <p className="flex gap-2  w-[220px]">
+                            <span className="text-sm font-spartan font-bold">
+                              Name:{" "}
+                            </span>
+                            <span className="text-sm font-spartan">
+                              {user.personalInfo.name}
+                            </span>
+                          </p>
+                          <p className="flex gap-2">
+                            <span className="text-sm font-spartan font-bold">
+                              CNIC:
+                            </span>
+                            <span className="text-sm font-spartan">
+                              {user.personalInfo.cnic}
+                            </span>
+                          </p>
+                          <p className="flex gap-2">
+                            <span className="text-sm font-spartan font-bold">
+                              Phone:
+                            </span>
+                            <span className="text-sm font-spartan">
+                              {user.personalInfo.mobile}
+                            </span>
+                          </p>
+                          <p className="flex gap-2">
+                            <span className="text-sm font-spartan font-bold">
+                              Email:
+                            </span>
+                            <span className="text-sm font-spartan">
+                              {user.personalInfo.email}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>}
+            </div>
+          ) : (
+            <div className=" shadow-md rounded p-6 ">
+              <div className="flex justify-between">
+                <button
+                  className="mb-4 pl-10 pr-10 p-1 font-spartan text-sm bg-[#ffcc00] text-white rounded"
+                  onClick={() => setSelectedUser(null)}
+                >
+                  Back
+                </button>
+                <div className="flex justify-end mb-5 ">
+                  <Menu>
+                    <IconButton
+                      as={MenuButton}
+                      aria-label="Options"
+                      icon={<RxDropdownMenu size={25} />}
+                      variant="unstyled"
+                      _focus={{ outline: "none" }}
+                    />
+                    <MenuList
+                      bg="white"
+                      className="p-4c rounded-lg text-sm font-spartan p-2  space-y-1"
+                    >
+                      <MenuItem
+                        className="hover:bg-[#ffcc00] p-1 rounded"
+                        onClick={() =>
+                          AcceptApplication(
+                            selectedUser._id,
+                            selectedUser.user_email
+                          )
+                        }
+                      >
+                        <Icon color="red" as={FcOk} w={5} h={5} mr={2} />
+                        <span className="hover:text-white ">
+                          Accept Application
+                        </span>
+                      </MenuItem>
+                      <MenuItem
+                        className="hover:bg-[#ffcc00] p-1 rounded"
+                        onClick={() =>
+                          RejectApplication(
+                            selectedUser._id,
+                            selectedUser.user_email
+                          )
+                        }
+                      >
+                        <Icon color="red" as={FcCancel} w={5} h={5} mr={2} />
+                        <span className="hover:text-white ">
+                          Reject Application
+                        </span>
+                      </MenuItem>
+                      <MenuItem
+                        className="hover:bg-[#ffcc00] p-1 rounded"
+                        onClick={() =>
+                          rejectnextgenwithmailApplication(
+                            selectedUser._id,
+                            selectedUser.user_email
+                          )
+                        }
+                      >
+                        <Icon color="red" as={FcCancel} w={5} h={5} mr={2} />
+                        <span className="hover:text-white ">
+                          Reject Application With Message
+                        </span>
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </div>
+              </div>
+              <div className="max-h-[calc(97vh-200px)] overflow-y-auto">
+                <div className={`${styles.educationcard}`}>
+                  <div className={`${styles.cardheader} justify-between`}>
+                    <div className="flex gap-3">
+                      <MdPerson
+                        style={{ color: "white", marginRight: "8px" }}
+                      />
+                      <span className="text-lg font-spartan">
+                        Personal Information
+                      </span>
+                    </div>
+                    <div className=""></div>
+                  </div>
+                  <div className={`${styles.cardbody}`}>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan ">
+                        Unique ID:
+                      </strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser._id}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan ">Name:</strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.name}
+                      </div>
+                    </div>
+
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan ">Gender:</strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.gender}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">DOB:</strong>
+                      <div>
+                        {new Date(
+                          selectedUser.personalInfo.dob
+                        ).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">Email:</strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.email}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">Mobile:</strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.mobile}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">CNIC:</strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.cnic}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">City:</strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.city}
+                      </div>
+                    </div>
+
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">
+                        Permanent Address:
+                      </strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.permanentaddress}
+                      </div>
+                    </div>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">
+                        LinkedIn Handle:
+                      </strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.linkedinhandle}
+                      </div>
+                    </div>
+
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">
+                        Current Address:
+                      </strong>
+                      <div className="font-spartan text-sml">
+                        {selectedUser.personalInfo.currentaddress}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`${styles.educationcard}`}>
+                  <div className={`${styles.cardheader} justify-between`}>
+                    <div className="flex gap-3 text-lg font-spartan">
+                      <MdSchool
+                        style={{ color: "white", marginRight: "8px" }}
+                      />
+                      Education Information
+                    </div>
+                    <div className=""></div>
+                  </div>
+                  {selectedUser.education?.map((edu) => (
+                    <div className={`${styles.cardbody}`} key={edu._id}>
+                      <div className={`${styles.cardrow}`}>
+                        <strong className="text-sm font-spartan">
+                          Degree Name:
+                        </strong>
+                        <div className="text-sm font-spartan">
+                          {edu.DegreeName}
+                        </div>
+                      </div>
+
+                      <div className={`${styles.cardrow}`}>
+                        <strong className="text-sm font-spartan">
+                          Institute Name:
+                        </strong>
+                        <div className="text-sm font-spartan">
+                          {edu.InstituteName}
+                        </div>
+                      </div>
+
+                      <div className={`${styles.cardrow}`}>
+                        <strong className="text-sm font-spartan">
+                          Degree Specialization:
+                        </strong>
+                        <div className="text-sm font-spartan">
+                          {edu.DegreeSpecialization}
+                        </div>
+                      </div>
+                      <div className={`${styles.cardrow}`}>
+                        <strong className="text-sm font-spartan">CGPA:</strong>
+                        <div className="text-sm font-spartan"> {edu.CGPA}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={`${styles.educationcard}`}>
+                  <div className={`${styles.cardheader} justify-between`}>
+                    <div className="flex gap-3 text-lg font-spartan">
+                      <LuLassoSelect
+                        style={{ color: "white", marginRight: "8px" }}
+                      />
+                      Internship Preference Information
+                    </div>
+                    <div className=""></div>
+                  </div>
+                  <div className={`${styles.cardbody}`}>
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">
+                        Preferred Function:
+                      </strong>
+                      <div>
+                        <div className="text-sm font-spartan">
+                          {Array.isArray(
+                            selectedUser.internshipPreference.preferredFunction
+                          )
+                            ? selectedUser.internshipPreference.preferredFunction.join(
+                              ", "
+                            )
+                            : selectedUser.internshipPreference
+                              .preferredFunction}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${styles.cardrow}`}>
+                      <strong className="text-sm font-spartan">
+                        Location:
+                      </strong>
+                      <div className="text-sm font-spartan">
+                        {selectedUser.internshipPreference.location}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`${styles.educationcard}`}>
+                  <div className={`${styles.cardheader} justify-between`}>
+                    <div className="flex gap-3 text-lg font-spartan">
+                      <MdWork style={{ color: "white", marginRight: "8px" }} />
+                      Work Experience Information
+                    </div>
+                    <div className=""></div>
+                  </div>
+                  {selectedUser.workExperience.map((work) => (
+                    <div key={work._id}>
+                      <div className={`${styles.cardbody}`}>
+                        <div className={`${styles.cardrow}`}>
+                          <strong className="text-sm font-spartan">
+                            Position Held:
+                          </strong>
+                          <div className="font-spartan text-sm">
+                            {work.PositionHeld}
+                          </div>
+                        </div>
+
+                        <div className={`${styles.cardrow}`}>
+                          <strong className="text-sm font-spartan">
+                            Organization Name:
+                          </strong>
+                          <div className="font-spartan text-sm">
+                            {work.OrganizationName}
+                          </div>
+                        </div>
+                        <div className={`${styles.cardrow}`}>
+                          <strong className="text-sm font-spartan">
+                            From Date:
+                          </strong>
+                          <div className="font-spartan text-sm">
+                            {new Date(work.FromDate).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className={`${styles.cardrow}`}>
+                          <strong className="text-sm font-spartan">
+                            To Date:
+                          </strong>
+                          <div className="font-spartan text-sm">
+                            {new Date(work.ToDate).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className={`${styles.cardrow}`}>
+                          <strong className="text-sm font-spartan">
+                            Presently Working:
+                          </strong>
+                          <div className="font-spartan text-sm">
+                            {work.PresentlyWorking ? "Yes" : "No"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        <p>session expired</p>
-      )}
-      <ReactModal
-        style={{
-          overlay: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-          },
-          content: {
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "space-between",
-            height: "30%",
-            width: "30%",
-            textAlign: "center",
-            marginLeft: "30%",
-          },
-        }}
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Full Content Modal"
-        ariaHideApp={false}
-      >
-        <div>
-          <p>
-            {modalContentType === "email" ? "Email: " : "Qualification: "}
-            {modalContent}
-          </p>
-        </div>
+
+        <ToastContainer />
+      </div>
+      <div className={styles.paginationbuttons}>
         <button
-          className="bg-amber-400 py-3 px-10 rounded"
-          onClick={closeModal}
+          className="pl-4 pr-4 rounded-sm bg-[#FFCC00]"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
         >
-          Close
+          Previous
         </button>
-      </ReactModal>
-      <ToastContainer />
-    </div>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          className="pl-4 pr-4 rounded-sm bg-[#FFCC00]"
+          onClick={() =>
+            setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
+    </BaseLayout>
   );
-};
-export default ViewallApplications;
+}

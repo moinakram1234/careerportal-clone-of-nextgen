@@ -345,6 +345,107 @@ export const updateRestore = async (_id) => {
   }
 };
 
+export const Request_To_accept_nextgen_application = async (_id, email) => {
+  try {
+    const response = await fetch(`/api/nextgen/accept`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ _id, email })
+    });
 
+    if (response.ok) {
+      return "Application Accepted successfully";
+    } else {
+      console.error("Error Accepted application:", response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error Accepted application:", error);
+    return false;
+  }
+}
+// reject application without any message
+export const Request_To_Reject_nextgen_application = async (_id, email) => {
+  try {
+    const response = await fetch(`/api/nextgen/reject`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ _id, email })
+    });
+
+    if (response.ok) {
+      return "Application rejected successfully";
+    } else {
+      console.error("Error rejecting application:", response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error rejecting application:", error);
+    return false;
+  }
+}
+//retore application and job posts
+
+export const sendmail_to_nextgen_applicant = async (message) => {
+  try {
+
+   // Fetch the list of candidates for the job post from the server
+   const response = await fetch(`/api/nextgen/sendmail`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json"
+     },
+     body: JSON.stringify({ message: message })
+   });
+   // Rest of the code...
+ 
+ if (response.ok) {
+       return "sent email successfully";
+     }
+   
+     else {
+       // If there's an error in sending notifications, log the error and return false
+       console.error("Error sending notifications:", response.statusText);
+       return false;
+     }
+   } catch (error) {
+     // If there's an error in the fetch operation itself, log the error and return false
+     console.error("Error sending notifications:", error);
+     return false;
+   }
+ };
+ 
+ export const sendmail_to_nextgen_reject_applicant = async (message) => {
+  try {
+  
+   // Fetch the list of candidates for the job post from the server
+   const response = await fetch(`${process.env.NEXT_PUBLIC_APP}/nextgen/sendmailtorejectapp`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json"
+     },
+     body: JSON.stringify({ message: message })
+   });
+   // Rest of the code...
+ 
+ if (response.ok) {
+       return "sent email successfully";
+     }
+   
+     else {
+       // If there's an error in sending notifications, log the error and return false
+       console.error("Error sending notifications:", response.statusText);
+       return false;
+     }
+   } catch (error) {
+     // If there's an error in the fetch operation itself, log the error and return false
+     console.error("Error sending notifications:", error);
+     return false;
+   }
+ };
 
 export { createJobPost, fetchJobPosts, updateJobPost, createJobapplication };

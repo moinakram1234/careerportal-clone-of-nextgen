@@ -42,6 +42,18 @@ export const getAllPosts = async () => {
     throw error;
   }
 };
+export const getAllPosts_mto = async () => {
+  try {
+    const jobPosts = await JobPost.find();
+    const mtoPosts = jobPosts.filter(post => post.experienceLevel.includes("mto"));
+    const mtoPostsData = mtoPosts.map(post => ({ jobTitle: post.jobTitle, _id: post._id }));
+    return mtoPostsData;
+  } catch (error) {
+    console.error("Error fetching job posts:", error);
+    throw error;
+  }
+};
+
 
 export const getPostById = async (id) => {
   try {

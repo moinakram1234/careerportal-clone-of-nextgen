@@ -4,7 +4,6 @@ import BottonSection from "@/components/bottomsection";
 import MISconponentsection from "@/components/landingpage/MISconponentsection";
 import Studentsection from "@/components/landingpage/studentsection";
 import DepartmentSectionJobs from "@/components/landingpage/DepartmentSectionJobs";
-
 const Career = () => {
  
   return (

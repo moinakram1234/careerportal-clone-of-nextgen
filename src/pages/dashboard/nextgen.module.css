@@ -1,0 +1,101 @@
+.educationcard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.cardheader {
+  background-color: #ffcc00;
+  color: #fff;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 18px;
+}
+
+.cardheader svg {
+  flex-shrink: 0;
+
+}
+
+.cardbody {
+  padding: 15px;
+}
+
+.cardrow {
+  margin-bottom: 10px;
+  background: rgb(223, 221, 221);
+  border-radius: 5px;
+  padding: 3px;
+  padding-left: 10px;
+  justify-content: space-between;
+  display: flex;
+}
+
+.carddata {
+
+  color: rgb(58, 53, 53);
+}
+
+.cardrow strong {
+  color: black;
+}
+
+.circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.paginationbuttons{
+  display: flex;
+  gap: 20px;
+  
+  justify-content: center;
+  margin-right: 50px;
+
+}
+.paginationbuttons button{
+ 
+  color: white;
+  border: none;
+  
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.loader {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  background-color: rgba(0, 0, 0, 0.5);
+  transform: rotate(45deg);
+  overflow: hidden;
+}
+.loader:after{
+  content: '';
+  position: absolute;
+  inset: 8px;
+  margin: auto;
+  background: #222b32;
+}
+.loader:before{
+  content: '';
+  position: absolute;
+  inset: -15px;
+  margin: auto;
+  background: #de3500;
+  animation: diamondLoader 2s linear infinite;
+}
+@keyframes diamondLoader {
+  0%  ,10% {
+    transform: translate(-64px , -64px) rotate(-45deg)
+  }
+  90% , 100% {
+    transform: translate(0px , 0px) rotate(-45deg)
+  }
+}

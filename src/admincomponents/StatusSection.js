@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { IoIosPeople } from "react-icons/io";
+import { IoIosDocument, IoIosPeople } from "react-icons/io";
 import { SlNote } from "react-icons/sl";
 import { IoTodaySharp } from "react-icons/io5";
 
 const DisplayStatus = ({ name, totalApplication, icon: IconComponent, animatePulse }) => {
   return (
-    <div className="grid p-4 w-full mt-5">
+    <div className="grid pl-4  ">
       <div className="col-span-1 flex  justify-between rounded-lg border shadow bg-white p-4">
         <div className="flex w-full flex-col">
-        {!animatePulse ?(<p className={`text-2xl font-bold  `}>
+        {!animatePulse ?(<p className={`text-xl font-spartan font-bold  `}>
             {totalApplication}
           </p>):(<div className=" bg-slate-200 rounded-full animate-pulse w-12 h-12"><p className={`text-2xl font-bold  animate-pulse`}>
             
             </p></div>)}
        
-       {!animatePulse ?(<p className="text-gray-700">{name}</p>):( <div className="mt-2 w-28 h-8 rounded animate-pulse bg-slate-200"><p className="text-gray-700 "></p></div>)}
+       {!animatePulse ?(<p className="text-gray-700 text-sm font-spartan">{name}</p>):( <div className="mt-2 w-28 h-8 rounded animate-pulse bg-slate-200"><p className="text-gray-700 "></p></div>)}
         </div>
         {!animatePulse ? (
           <p className="my-1 flex min-w-[55px] items-center justify-center rounded-lg  font-semibold">
@@ -39,9 +39,10 @@ const filterDataByDate = (data, targetDate) => {
   });
 };
 
-const ApplicationStatus = () => {
+const ApplicationStatus = ({refreshTrigger, onRefreshComplete, setIsLoading}) => {
   const [animatePulse, setAnimatePulse] = useState(true);
-  const [totalpost, setTotalpost] = useState(null);
+  const [totalUsers, setTotalUsers] = useState(null);
+  const [totalUserswithoutapp, setTotalUserswithoutapp] = useState(null);
   const [totalapplication, setTotalapplication] = useState(0);
   const [todayPosts, setTodayPosts] = useState(null);
   const [todayApplications, setTodayApplications] = useState(null);
@@ -49,32 +50,87 @@ const ApplicationStatus = () => {
   useEffect(() => {
     const fetchData = async (url, setData) => {
       try {
+
         const response = await fetch(url);
         const data = await response.json();
-        setData(data.length);
+        setData(data.totalDocuments);
         setAnimatePulse(false);
+        setIsLoading(false)
+        onRefreshComplete();
       } catch (error) {
         console.error(`Error fetching data from ${url}:`, error);
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
       }
     };
 
+
+    const fetchusers = async (url, setData) => {
+      try {
+
+        const response = await fetch(url);
+        const data = await response.json();
+        setData(data.totalDocuments);
+        setAnimatePulse(false);
+        setIsLoading(false)
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
+      } catch (error) {
+        console.error(`Error fetching data from ${url}:`, error);
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
+      }
+    };
+    const fetchuserswithoutapp = async (url, setData) => {
+      try {
+
+        const response = await fetch(url);
+        const data = await response.json();
+        setData(data.total);
+        setAnimatePulse(false);
+        setIsLoading(false)
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
+      } catch (error) {
+        console.error(`Error fetching data from ${url}:`, error);
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
+      }
+    };
     const fetchTodayData = async (url, setTodayData) => {
       try {
         const response = await fetch(url);
         const data = await response.json();
-        const today = new Date().toDateString();
-        const todayData = filterDataByDate(data, today);
-        setTodayData(todayData.length);
+    
+        const options = { timeZone: 'Asia/Karachi' };
+        const now = new Date();
+        const today = new Date(now.toLocaleString('en-US', options)).toDateString();
+        
+        const todayData = filterDataByDate(data.data, today);
+        setTodayData(todayData);
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
       } catch (error) {
         console.error(`Error fetching data from ${url}:`, error);
+        setTimeout(() => {
+          onRefreshComplete();
+        }, 3000); // 3000 milliseconds = 2 seconds
       }
     };
+    
 
-    fetchData(process.env.NEXT_PUBLIC_APP_URL, setTotalapplication);
-    fetchData(process.env.NEXT_PUBLIC_URL, setTotalpost);
-    fetchTodayData(process.env.NEXT_PUBLIC_APP_URL, setTodayApplications);
-    fetchTodayData(process.env.NEXT_PUBLIC_URL, setTodayPosts);
-  }, []); // Add dependencies if needed
+    fetchData(`/api/nextgen`, setTotalapplication);
+    fetchusers(`/api/user`, setTotalUsers);
+    fetchuserswithoutapp(`/api/usersWithoutApplications`, setTotalUserswithoutapp);
+    fetchTodayData(`/api/nextgen`, setTodayApplications);
+
+  },  [refreshTrigger]);
 
   return (
     <div className="flex">
@@ -82,9 +138,10 @@ const ApplicationStatus = () => {
       <DisplayStatus
         name={"Total Applications"}
         totalApplication={totalapplication}
-        icon={IoIosPeople}
+        icon={IoIosDocument}
         animatePulse={animatePulse}
       />
+    
       {/* DisplayStatus for Today's Applications */}
       <DisplayStatus
         name={"Today's Applications"}
@@ -94,16 +151,15 @@ const ApplicationStatus = () => {
       />
       {/* DisplayStatus for Total Posts */}
       <DisplayStatus
-        name={"Total Posts"}
-        totalApplication={totalpost}
-        icon={SlNote}
+        name={"Total Users"}
+        totalApplication={totalUsers}
+        icon={IoIosPeople}
         animatePulse={animatePulse}
       />
-      {/* DisplayStatus for Today's Posts */}
-      <DisplayStatus
-        name={"Today's Posts"}
-        totalApplication={todayPosts}
-        icon={IoTodaySharp}
+          <DisplayStatus
+        name={"Users whithout Apps"}
+        totalApplication={totalUserswithoutapp}
+        icon={IoIosPeople}
         animatePulse={animatePulse}
       />
     </div>

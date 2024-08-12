@@ -1,89 +1,63 @@
-// prisma/jobapplication.js
+import  connectDB from "./db";
+import { FormData, User } from "./schema";
 
-import connectDB from './db';
-import { getSpecificPosts } from './jobpost';
-import { JobApplication } from './schema';
+// Establish the database connection
 
 connectDB();
 
-export const createJobApplication = async (formData) => {
+export const downloadAllApp = async () => {
   try {
-    const {
-      fullName,
-      phone,
-      email,
-      qualification,
-      address,
-      cv,
-      selectedDepartment,
-      postid,
-      experience,
-      experiencerange,
-      countryorregion,
-      city,
-      stateorprovince,
-      zipcode,
-    } = formData;
-
-    const appExist = await JobApplication.findOne({
-      email: email,
-    });
-
-    if (appExist) {
-      return { message: 'Application already submitted' };
-    }
-
-    await JobApplication.create({
-      fullName,
-      phone,
-      email,
-      qualification,
-      address,
-      cv,
-      selectedDepartment,
-      postid,
-      experience,
-      experiencerange: experiencerange.split(',').map(Number),
-      countryorregion,
-      city,
-      stateorprovince,
-      zipcode,
-    });
-
-    return { message: 'Application submitted successfully' };
+    
+    // Fetch data from FormData schema
+    const formDatas = await FormData.find({});
+    return formDatas;
   } catch (error) {
-    console.error('Error creating job application:', error);
+    console.error("Error fetching job posts:", error);
     throw error;
   }
 };
 
-export const getJobApplication = async () => {
+export const getAllApp = async (page = 1, limit = 10) => {
   try {
-    const getAllApplications = await JobApplication.find().sort({ createdAt: 'desc' });
+    const skip = (page - 1) * limit;
+    const formDatas = await FormData.find({})
+      .skip(skip)
+      .limit(limit);
 
-    const applicationsWithJobPostData = await Promise.all(
-      getAllApplications.map(async (application) => {
-        const postid = application.postid;
-        const jobpostApp = await getSpecificPosts(postid);
-        return { ...application.toObject(), jobpostApp }; // Convert to object to ensure proper merging
-      })
-    );
-  
+    const totalDocuments = await FormData.countDocuments();
+    const totalPages = Math.ceil(totalDocuments / limit);
 
-    return applicationsWithJobPostData;
+    return {
+      data: formDatas, // Ensure this is an array
+      page,
+      limit,
+      totalPages,
+      totalDocuments,
+    };
   } catch (error) {
-    console.error('Error fetching job applications:', error);
+    console.error("Error fetching job posts:", error);
     throw error;
   }
 };
 
-export const deleteApplication = async (_id) => {
-  try {
-    const jobApplicationData = await JobApplication.findByIdAndDelete(_id);
+export const graphAllApp = async () => {
+  const currentYear = new Date().getFullYear();
+  const startOfYear = new Date(`${currentYear}-01-01T00:00:00Z`);
+  const endOfYear = new Date(`${currentYear + 1}-01-01T00:00:00.000Z`); // Ensure correct format
 
-    return jobApplicationData;
+  try {
+    const documents = await FormData.find({
+      createdAt: {
+        $gte: startOfYear,
+        $lt: endOfYear
+      }
+    })
+    .select('createdAt') // Only include the createdAt field
+    .exec(); // Use exec() to execute the query
+
+    return documents;
   } catch (error) {
-    console.error('Error deleting job application:', error);
-    throw error;
+    console.error('Failed to fetch data:', error);
+    throw new Error('Failed to fetch data');
   }
 };

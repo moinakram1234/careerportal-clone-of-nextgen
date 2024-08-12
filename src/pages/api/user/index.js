@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { getUserByUsernameAndPassword } from "../mongodb/user";
+import { downloadAllUsers, getAllUsers, getUserByUsernameAndPassword } from "../mongodb/user";
 
 // Generate secret key
 const generateSecretKey = () => {
@@ -18,10 +18,10 @@ export default async function handler(req, res) {
         const user = await getUserByUsernameAndPassword(email, userPassword);
 
         if (user && user._id) {
-          const expiresIn = 3600 * 12 * 5; // 1 hour in seconds
+      const expiresIn = 3600 * 24;
           // User authentication successful, create a JWT token
           const token = jwt.sign(
-            { userId: user._id, email: user.email, isadmin: user.isAdmin },
+            { userId: user._id, email: user.email, isadmin: user.isAdmin, phone:user.Phone, CNIC:user.CNIC },
             generateSecretKey(),
             { expiresIn }
           );
@@ -31,6 +31,25 @@ export default async function handler(req, res) {
             .status(401)
             .json({ error: "Invalid username or password" });
         }
+      }
+      case "get":
+        {
+          const page = req.query.page;
+          console.log(page)
+          const limit = 10;
+       if(page=="download")
+       {
+        const users = await downloadAllUsers(
+         
+        );
+        return res.status(200).json(users
+        );
+      }
+      else{
+        const users = await getAllUsers( page,
+          limit);
+        return res.status(200).json(users);
+      }
       }
       // Add other cases as needed for different endpoints
       default:

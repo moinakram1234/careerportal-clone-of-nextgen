@@ -104,7 +104,7 @@ export default function Internship() {
                 className={`  p-2 border-2 border-solid `}
                 data-aos="fade-right"
               >
-                <Link href="/jobs?tag=student">View Internships</Link>
+                <Link href={`/jobs?tag=student`}>View</Link>
               </button>
             </div>
             <div

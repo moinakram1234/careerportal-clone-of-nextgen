@@ -1,82 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { RxDropdownMenu } from "react-icons/rx";
-import {
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/table";
-import {
-  Box,
-  Input,
-  ChakraProvider,
-  extendTheme,
+// pages/index.js
 
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Icon,
-  IconButton,
-} from "@chakra-ui/react";
 import BaseLayout from "@/admincomponents/BaseLayout";
+import { useEffect, useState } from "react";
+import { FaUser } from "react-icons/fa";
+import styles from "./nextgen.module.css";
+import { MdPerson, MdSchool, MdWork } from "react-icons/md";
+import { LuLassoSelect } from "react-icons/lu";
+
+import * as XLSX from "xlsx";
 import {
   Request_To_Reject_application,
-  deleteData_application,
-  fetchData_application,
+  Request_To_Reject_nextgen_application,
 } from "@/server_requests/client_requests";
-import Link from "next/link";
+import { toast } from "react-toastify";
+import { DownloadIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
-import { isTokenExpired } from "@/components/tokenUtils";
 import parseJwt from "@/components/parsetoken";
-import ReactModal from "react-modal"; // Import the react-modal library
-import headers from "@/Data/Applicationheader";
-import {
-
-  DeleteIcon,
-  DownloadIcon,
-} from "@chakra-ui/icons";
-import { BiFilter } from "react-icons/bi";
-import AppFilters from "@/admincomponents/admindashbord/app_filters";
-import { FcCancel, FcOk } from "react-icons/fc";
-
-
-const ViewallApplications = () => {
-  const [applications, setApplications] = useState(null);
-  const [App_Data,SetApp_Data]=useState(null)
-  const [isValidToken, setIsValidToken] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalContent, setModalContent] = useState("");
-  const [modalContentType, setModalContentType] = useState("");
-  const [expandedEmailId, setExpandedEmailId] = useState(null);
-  const [searchInput, setSearchInput] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+import { isTokenExpired } from "@/components/tokenUtils";
+export default function Home() {
+  const [data, setData] = useState(null);
+  const [filteredData, setFilteredData] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchId, setSearchId] = useState("");
   const router = useRouter();
-
-
-
-  const redirectToHome = () => router.push("/");
-  const checkTokenExpiration = async () => {
+  const redirectToHome = () => router.push("/login");
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       // Token is not present, redirect to home
       redirectToHome();
       return;
     }
-
     const tokenparse = parseJwt(token);
-
     if (!tokenparse || tokenparse.isadmin === undefined) {
       // Token parsing failed or isadmin property is not present, redirect to home
       redirectToHome();
       return;
     }
-
     if (tokenparse.isadmin === false) {
       // User is not an admin, redirect to home
       redirectToHome();
@@ -88,348 +48,334 @@ const ViewallApplications = () => {
       console.log(token);
       setIsValidToken(false);
       redirectToHome();
-    } else {
-      // Token is valid, update state
-      setIsValidToken(true);
     }
-  };
-  const formatCreatedAt = (createdAt) => {
-    const date = new Date(createdAt);
-    const formattedDate = date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    return formattedDate;
-  };
-  useEffect(() => { if (typeof document !== 'undefined') {
-    checkTokenExpiration();
-    const loadData = async () => {
-      try {
-        const data = await fetchData_application();
-        if (data) {
-          setIsLoading(false);
-        }
-        const filteredJobApplications = data.filter(
-          (jobApplication) => jobApplication.status !== "deleted" && jobApplication.ApprovalStatus === "accepted"
+  
+    fetch(`/api/nextgen?page=download`)
+      .then((response) => response.json())
+      .then((data) => {
+        const filteredData = data.filter(
+          (item) => item.appstatus === "accepted"
         );
-        SetApp_Data(filteredJobApplications)
-        setApplications(filteredJobApplications);
-
-      } catch (error) {
-        // Handle the error appropriately
-        console.error("Error loading data:", error);
-      }
-    };
-
-    loadData();}
+        setData(filteredData);
+        setFilteredData(filteredData);
+      });
   }, []);
-  const deleteApplication = async (applicationId, path) => {
-    await deleteData_application(applicationId, path);
-    // After deletion, refresh the list of applications
-    const updatedApplications = applications.filter(
-      (app) => app._id !== applicationId
-    );
-    setApplications(updatedApplications);
-  };
 
-  const AcceptApplication = async (applicationId,email) => {
-    const data = {
-      ApprovalStatus: "accepted",
-    };
-  };
-  const RejectApplication = async (applicationId,email) => {
-
-    await Request_To_Reject_application(applicationId, email);
+  const RejectApplication = async (applicationId, email) => {
+    await Request_To_Reject_nextgen_application(applicationId, email);
     toast.success("Application rejected successfully");
     // After deletion, refresh the list of applications
-    const updatedApplications = applications.filter(
-      (app) => app._id !== applicationId
-    );
- 
-    SetApp_Data(updatedApplications)
+    const updatedApplications = data.filter((app) => app._id !== applicationId);
+
+    setData(updatedApplications);
   };
 
-  const openModal = (content, contentType) => {
-    setModalContent(content);
-    setModalContentType(contentType);
-    setModalIsOpen(true);
+  const downloadExcel = () => {
+    const combinedData = data.flatMap(user => {
+      const personalInfo = {
+        _id: user._id,
+        Name: user.personalInfo.name,
+        Gender: user.personalInfo.gender,
+        DOB: new Date(user.personalInfo.dob).toLocaleDateString(),
+        Email: user.personalInfo.email,
+        Mobile: user.personalInfo.mobile,
+        CNIC: user.personalInfo.cnic,
+        City: user.personalInfo.city,
+        PermanentAddress: user.personalInfo.permanentaddress,
+        CurrentAddress: user.personalInfo.currentaddress,
+        LinkedInHandle: user.personalInfo.linkedinhandle,
+        Languages: user.personalInfo.languages.join(", "),
+      };
+
+      const education = user.education.map(edu => ({
+        DegreeName: edu.DegreeName,
+        InstituteName: edu.InstituteName,
+        DegreeSpecialization: edu.DegreeSpecialization.join(", "),
+        GraduationYear: edu.Graduation_year,
+        CGPA: edu.CGPA,
+      }));
+
+      const internshipPreference = {
+        PreferredFunction: Array.isArray(user.internshipPreference?.preferredFunction) 
+          ? user.internshipPreference.preferredFunction.join(", ") 
+          : "Not specified",
+        Location: user.internshipPreference?.location || "Location not specified",
+      };
+      const Useremail = {
+        Login_Email: user.user_email
+     
+    };
+      const workExperience = user.workExperience.map(work => ({
+        PositionHeld: work.PositionHeld,
+        OrganizationName: work.OrganizationName,
+        FromDate: new Date(work.FromDate).toLocaleDateString(),
+        ToDate: new Date(work.ToDate).toLocaleDateString(),
+        PresentlyWorking: work.PresentlyWorking ? "Yes" : "No",
+      }));
+
+      return education.map(edu => ({
+        ...personalInfo,
+        ...Useremail,
+        ...edu,
+        ...internshipPreference,
+        ...workExperience,
+      }));
+    });
+
+    const workbook = XLSX.utils.book_new();
+    const combinedSheet = XLSX.utils.json_to_sheet(combinedData);
+    XLSX.utils.book_append_sheet(workbook, combinedSheet, "Combined Data");
+    XLSX.writeFile(workbook, "acceptedApplications.xlsx");
   };
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setModalContent("");
-    setModalContentType("");
+
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase(); // Convert input value to lower case
+
+    setSearchId(value);
+    const filtered = data.filter((user) => user._id.toLowerCase().includes(value));
+    setFilteredData(filtered);
   };
-  const theme = extendTheme({
-    styles: {
-      global: {
-        body: {
-          bg: "white",
-        },
-      },
-    },
-  });
   return (
-    <div className="pt-5" >
-      {isValidToken === true ? (
-       <div>
-      
-          <div>
-           <BaseLayout>
-    
-       <ChakraProvider theme={theme} >
-         <Box p={8} >
-           <div className="w-full sm:w-1/2 md:w-2/4 lg:w-2/5 xl:w-1/3">
-             <Input
-               placeholder="Search position..."
-               mb={4}
-               value={searchInput}
-               onChange={(e) => setSearchInput(e.target.value)}
-             />
-           </div>
-           <div className="pt-5 pb-10 flex gap-2">
-            <BiFilter size={30}/>
-            <AppFilters
-        applications={applications}
-        SetApp_Data={SetApp_Data}
-        isLoading={setIsLoading}
-      />
-</div>
-{isLoading ? (
-        <div className="w-full h-[80vh]  flex justify-center items-center">
-        <div className="filterloading "></div>
-       </div>
-        ) : (
-          <div className="overflow-auto w-[60%] ">
-          <TableContainer >
-             <Table  >
-               <Thead className="bg-[#FFC83D]  border" style={{ borderRadius: "20px" }} >
-                 <Tr>
-                   {headers.map((header, index) => (
-                     <Th className="text-xm" key={index}>
-                       {header}
-                     </Th>
-                   ))}
-                 </Tr>
-               </Thead>
-               <Tbody>
-                 {(searchInput
-                   ? App_Data != null
-                     ? App_Data.filter(
-                         (app) =>
-                           app.jobpostApp[0]?.jobTitle &&
-                           app.jobpostApp[0]?.jobTitle
-                             .toLowerCase()
-                             .includes(searchInput.toLowerCase())
-                       )
-                     : []
-                   : App_Data != null
-                   ? App_Data
-                   : []
-                 ).map((data, id) => (
-                      <Tr key={id} className="border">
-                           <Td >
-                          <Menu>
-                            <IconButton
-                              as={MenuButton}
-                              aria-label="Options"
-                              icon={<RxDropdownMenu size={25} />}
-                       
-                              variant="unstyled"
-                              _focus={{ outline: "none" }}
-
-                            />
-                            <MenuList>
-                              <MenuItem>
-                                <Link href={`${data.cv}`} passHref>
-                                  <Icon as={DownloadIcon} w={5} h={5} mr={2} />
-                                  Download
-                                </Link>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={() =>
-                                  deleteApplication(data._id, data.cv)
-                                }
-                              >
-                                <Icon
-                                  color="red"
-                                  as={DeleteIcon}
-                                  w={5}
-                                  h={5}
-                                  mr={2}
-                                />
-                                Delete
-                              </MenuItem>
-                              {/* <MenuItem
-                                onClick={() =>
-                                  AcceptApplication(data._id,data.email)
-                                }
-                              >
-                                <Icon
-                                  color="red"
-                                  as={FcOk}
-                                  w={5}
-                                  h={5}
-                                  mr={2}
-                                />
-                               Accept Application
-                              </MenuItem> */}
-                           
-                              {/* <MenuItem
-                                onClick={() =>
-                                  RejectApplication_With_Message(data._id,data.email)
-                                }
-                              >
-                                <Icon
-                                  color="red"
-                                  as={FcCancel}
-                                  w={5}
-                                  h={5}
-                                  mr={2}
-                                />
-                               Reject Application With Message 
-                              </MenuItem> */}
-                            </MenuList>
-                          </Menu>
-                        </Td>
-                        <Td >{data.fullName}</Td>
-                        <Td >
-                          {data.email.length > 10 ? (
-                            <>
-                              {expandedEmailId === data._id ? (
-                                data.email
-                              ) : (
-                                <>
-                                  {`${data.email.substring(0, 10)}...`}
-                                  <button
-                                    onClick={() =>
-                                      openModal(data.email, "email")
-                                    }
-                                    className="text-amber-400 ml-2 "
-                                  >
-                                    View Full
-                                  </button>
-                                </>
-                              )}
-                            </>
-                          ) : (
-                            data.email
-                          )}
-                        </Td>
-                        <Td >{data.phone}</Td>
-                        <Td >
-                          {data.jobpostApp[0] ? (
-                            <div>{data.jobpostApp[0].jobTitle}</div>
-                          ) : (
-                            "Post deleted....."
-                          )}
-                        </Td>
-                        <Td >{data.address}</Td>
-                        <Td >{data.selectedDepartment}</Td>
-
-                        <Td>
-                          <div className="flex items-center">
-                            {data.qualification.length > 2 ? (
-                              <>
-                                {expandedEmailId === data._id ? (
-                                  data.qualification
-                                ) : (
-                                  <>
-                                    {`${data.qualification.substring(0, 2)}...`}
-                                    <button
-                                      onClick={() =>
-                                        openModal(
-                                          data.qualification,
-                                          "qualification"
-                                        )
-                                      }
-                                      className="text-amber-400 ml-2 "
-                                    >
-                                      View Full
-                                    </button>
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              data.qualification
-                            )}
-                          </div>
-                        </Td>
-                      <Td>
-                        {data.experience}
-                      </Td>
-                      <Td>
-                        {data.experiencerange[0]} to {data.experiencerange[1]}
-                      </Td>
-                      <Td>
-                        {data.countryorregion}
-                      </Td>
-                      <Td>
-                        {data.city}
-                      </Td>
-                      <Td>
-                        {data.stateorprovince}
-                      </Td>
-                      <Td>
-                        {data.zipcode}
-                      </Td>
-                      <Td>
-                        {formatCreatedAt(data.createdAt)}
-                      </Td>
-                      </Tr>
-                 ))}
-                 </Tbody>
-               </Table>
-             </TableContainer> 
-
-          </div>    )}
-           </Box>
-         </ChakraProvider>
-      
-       </BaseLayout>
-          </div>
-       
-       </div>
-      ) : (
-        <p>session expired</p>
-      )}
-      <ReactModal
-        style={{
-          overlay: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-          },
-          content: {
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "space-between",
-            height: "30%",
-            width: "30%",
-            textAlign: "center",
-            marginLeft: "30%",
-          },
-        }}
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Full Content Modal"
-        ariaHideApp={false}
-      >
-        <div>
-          <p>
-            {modalContentType === "email" ? "Email: " : "Qualification: "}
-            {modalContent}
-          </p>
+    <BaseLayout>
+      <div className="container mx-auto p-4 ">
+        <div className="flex justify-center p-10 ">
+        <h1
+              className={`${styles.headertext} text-2xl font-bold  text-[#ffcc00] mb-10`}
+            >
+             Haidri Beverages Career Portal
+            </h1>
         </div>
-        <button className="bg-amber-400 py-3 px-10 rounded" onClick={closeModal}>
-          Close
-        </button>
-      </ReactModal>
-      <ToastContainer />
-    </div>
+
+        {!selectedUser ? (
+          <div>
+            {" "}
+            <div className="flex justify-between mb-5">
+              <input
+                type="text"
+                placeholder="Search by ID"
+                value={searchId}
+                onChange={handleSearch}
+                className="py-0 px-2 border border-gray-300 w-72 rounded"
+              />
+              <button
+                className="p-1 bg-[#ffcc00] text-sm text-white rounded"
+                onClick={downloadExcel}
+              >
+                <DownloadIcon /> Download Excel
+              </button>
+      
+            </div>
+            {filteredData?.map((user) => (
+              <div
+                key={user._id}
+                className="bg-white border-b-2 rounded p-4 mb-4 cursor-pointer"
+                onClick={() => setSelectedUser(user)}
+              >
+                <div className="flex items-center  gap-4">
+                  <FaUser className="text-[#ffcc00] " size={18} />
+                  <div className="grid grid-cols-4 text-sm ">
+                    <p className=" w-[220px]">
+                      <strong>Name:</strong> {user.personalInfo.name}
+                    </p>
+                    <p>
+                      <strong>CNIC:</strong> {user.personalInfo.cnic}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {user.personalInfo.mobile}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {user.personalInfo.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>
+          <button
+             className="mb-4 pl-10 pr-10 p-1 font-spartan text-sm bg-[#ffcc00] text-white rounded"
+             onClick={() => setSelectedUser(null)}
+           >
+             Back
+           </button>
+           <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+         
+         <div className={`${styles.educationcard}`}>
+          <div className={`${styles.cardheader} justify-between`}>
+            <div className="flex gap-3">
+              <MdPerson style={{ color: "white",  marginRight: "8px" }} />
+              <span className="text-lg font-spartan">    Personal Information</span>
+            </div>
+            <div className=""></div>
+          </div>
+          <div className={`${styles.cardbody}`}>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan ">Unique ID:</strong>
+              <div className="font-spartan text-sml" >{selectedUser._id}</div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan ">Name:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.name}</div>
+            </div>
+
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan ">Gender:</strong>
+              <div className="font-spartan text-sml" > {selectedUser.personalInfo.gender}</div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">DOB:</strong>
+              <div>
+                {new Date(
+                  selectedUser.personalInfo.dob
+                ).toLocaleDateString()}
+              </div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">Email:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.email}</div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">Mobile:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.mobile}</div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">CNIC:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.cnic}</div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">City:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.city}</div>
+            </div>
+
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">Permanent Address:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.permanentaddress}</div>
+            </div>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">LinkedIn Handle:</strong>
+              <div className="font-spartan text-sml" >{selectedUser.personalInfo.linkedinhandle}</div>
+            </div>
+
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">Current Address:</strong>
+              <div className="font-spartan text-sml" > {selectedUser.personalInfo.currentaddress}</div>
+            </div>
+          </div>
+        </div>
+        
+
+        <div className={`${styles.educationcard}`}>
+          <div className={`${styles.cardheader} justify-between`}>
+            <div className="flex gap-3 text-lg font-spartan">
+              <MdSchool style={{ color: "white", marginRight: "8px" }} />
+              Education Information
+            </div>
+            <div className=""></div>
+          </div>
+          {selectedUser.education?.map((edu) => (
+            <div className={`${styles.cardbody}`} key={edu._id}>
+              <div className={`${styles.cardrow}`}>
+                <strong className="text-sm font-spartan">Degree Name:</strong>
+                <div className="text-sm font-spartan">{edu.DegreeName}</div>
+              </div>
+
+              <div className={`${styles.cardrow}`}>
+                <strong className="text-sm font-spartan">Institute Name:</strong>
+                <div className="text-sm font-spartan"> {edu.InstituteName}</div>
+              </div>
+              {/* <div className={`${styles.cardrow}`}>
+              <strong className="text-sm">Degree Level:</strong>
+              <div> {edu.DegreeLevel}</div>
+            </div> */}
+              <div className={`${styles.cardrow}`}>
+                <strong className="text-sm font-spartan">Degree Specialization:</strong>
+                <div className="text-sm font-spartan"> {edu.DegreeSpecialization}</div>
+              </div>
+              <div className={`${styles.cardrow}`}>
+                <strong className="text-sm font-spartan">CGPA:</strong>
+                <div className="text-sm font-spartan"> {edu.CGPA}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      
+
+        <div className={`${styles.educationcard}`}>
+          <div className={`${styles.cardheader} justify-between`}>
+            <div className="flex gap-3 text-lg font-spartan">
+              <LuLassoSelect
+                style={{ color: "white", marginRight: "8px" }}
+              />
+              Internship Preference Information
+            </div>
+            <div className=""></div>
+          </div>
+          <div className={`${styles.cardbody}`}>
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">Preferred Function:</strong>
+              <div>
+                <div className="text-sm font-spartan">
+                  {Array.isArray(
+                    selectedUser.internshipPreference.preferredFunction
+                  )
+                    ? selectedUser.internshipPreference.preferredFunction.join(
+                        ", "
+                      )
+                    : selectedUser.internshipPreference.preferredFunction}
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.cardrow}`}>
+              <strong className="text-sm font-spartan">Location:</strong>
+              <div className="text-sm font-spartan"> {selectedUser.internshipPreference.location}</div>
+            </div>
+          </div>
+        </div>
+
+
+        <div className={`${styles.educationcard}`}>
+          <div className={`${styles.cardheader} justify-between`}>
+            <div className="flex gap-3 text-lg font-spartan">
+              <MdWork style={{ color: "white", marginRight: "8px" }} />
+              Work Experience Information
+            </div>
+            <div className=""></div>
+          </div>
+          {selectedUser.workExperience.map((work) => (
+            <div key={work._id}>
+              <div className={`${styles.cardbody}`}>
+                <div className={`${styles.cardrow}`}>
+                  <strong className="text-sm font-spartan">Position Held:</strong>
+                  <div className="font-spartan text-sm"> {work.PositionHeld}</div>
+                </div>
+
+                <div className={`${styles.cardrow}`}>
+                  <strong className="text-sm font-spartan">Organization Name:</strong>
+                  <div className="font-spartan text-sm"> {work.OrganizationName}</div>
+                </div>
+                <div className={`${styles.cardrow}`}>
+                  <strong className="text-sm font-spartan">From Date:</strong>
+                  <div className="font-spartan text-sm"> {new Date(work.FromDate).toLocaleDateString()}</div>
+                </div>
+                <div className={`${styles.cardrow}`}>
+                  <strong className="text-sm font-spartan">To Date:</strong>
+                  <div className="font-spartan text-sm"> {new Date(work.ToDate).toLocaleDateString()}</div>
+                </div>
+                <div className={`${styles.cardrow}`}>
+                  <strong className="text-sm font-spartan">Presently Working:</strong>
+                  <div className="font-spartan text-sm"> {work.PresentlyWorking ? "Yes" : "No"}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+ </div>
+     </div>
+        )}
+      </div>
+    </BaseLayout>
   );
-};
-export default ViewallApplications;
+}

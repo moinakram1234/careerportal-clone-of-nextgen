@@ -41,7 +41,7 @@ const Sidebar = () => {
             src="/images/logo.png"
             alt="logo"
           />
-          <p className="text-xl font-bold tracking-tight ">Haidri Beverages</p>
+          <p className="text-lg font-bold tracking-tight ">Haidri Beverages</p>
         </div>
         <ul className="sidebar__list">
           {sidebarItems.map(({ name, href, icon: Icon, subItems }) => {

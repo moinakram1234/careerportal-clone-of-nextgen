@@ -1,8 +1,9 @@
 import React from 'react'
-import Login from './login'
+import CareerPortal from './career-portal'
+
 const index = () => {
   return (
- <Login/>
+ <CareerPortal/>
   )
 }
 
